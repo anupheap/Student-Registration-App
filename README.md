@@ -1,0 +1,1 @@
+# some-stupid-cpp-app
