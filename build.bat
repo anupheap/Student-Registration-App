@@ -11,7 +11,12 @@ if exist opengl32.dll (
     copy /Y opengl32.dll output\ >nul
     echo [OK] OpenGL Fix copied.
 )
-
+if not exist raylib.dll (
+    echo [WARN] raylib.dll not yet found! Pulling it from the source file...
+    copy /Y raylib.dll output\
+) else (
+    echo [OK] raylib.dll found.
+)
 :: 3. Compile
 :: -static : Bakes libraries into the exe so it runs anywhere
 :: -mwindows : Hides the black console window
