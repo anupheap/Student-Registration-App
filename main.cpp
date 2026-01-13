@@ -3,6 +3,7 @@
 #include "raygui.h"         // Your downloaded header
 #include "Student.h"        // Your class
 #include <string>
+#include "elements.hpp"
 
 // Enum to manage which screen we are on
 typedef enum { 
@@ -44,6 +45,8 @@ int main() {
 
         // --- SCREEN 1: LOGIN (START UP MODULE) ---
         if (currentScreen == SCREEN_LOGIN) {
+            Button confirm((char*)"textures/confirm_button.png", (char*)"textures/confirm_hover.png", (char*)"textures/confirm_pressed.png");
+            confirm.Draw({400, 300}, 2, 0);
             DrawText("STUDENT LOGIN", 320, 100, 20, DARKGRAY);
 
             DrawText("Name:", 200, 185, 20, BLACK);
@@ -57,17 +60,16 @@ int main() {
                 string sName = string(nameBuffer);
                 string sID = string(idBuffer);
 
-                if (sName.empty()) {
+                if (confirm.isPressed()) {
                     strcpy(errorMessage, "Error: Name cannot be empty!");
                 } else if (sID.length() != 9) {
                     strcpy(errorMessage, "Error: ID must be 9 digits!");
                 } else if (sID.substr(0, 4) != "7000") {
                     strcpy(errorMessage, "Error: ID must start with 7000!");
                 } else {
-                    // Success! Save and move to next screen
                     student.setName(sName);
                     student.setID(sID);
-                    errorMessage[0] = '\0'; // Clear error
+                    errorMessage[0] = '\0';
                     currentScreen = SCREEN_SEMESTER;
                 }
             }
