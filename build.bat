@@ -25,14 +25,14 @@ if not exist output\textures\confirm_button.png (
     echo [WARNING] confirm_button.png not yet found! Pulling it from the source file...
     copy /Y textures\confirm_button.png output\textures\
 ) else (
-    echo [OKAY] confirm found.
+    echo [OKAY] confirm_button.png found.
 )
 
 if not exist output\textures\confirm_hover.png (
     echo [WARNING] confirm_hover.png not yet found! Pulling it from the source file...
     copy /Y textures\confirm_hover.png output\textures\
 ) else (
-    echo [OKAY] confirm found.
+    echo [OKAY] confirm_hover.png found.
 )
 
 
@@ -40,7 +40,7 @@ if not exist output\textures\confirm_pressed.png (
     echo [WARNING] confirm_pressed.png not yet found! Pulling it from the source file...
     copy /Y textures\confirm_pressed.png output\textures\
 ) else (
-    echo [OKAY] confirm found.
+    echo [OKAY] confirm_pressed.png found.
 )
 ::Compiles the code
 echo Compiling...

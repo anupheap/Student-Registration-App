@@ -56,15 +56,15 @@ int main() {
             if (GuiTextBox((Rectangle){ 280, 230, 250, 30 }, idBuffer, 128, editID)) editID = !editID;
 
             // Validation Logic (Button)
-            if (GuiButton((Rectangle){ 350, 300, 100, 30 }, "NEXT")) {
+            if (confirm.isPressed()) {
                 string sName = string(nameBuffer);
                 string sID = string(idBuffer);
 
-                if (confirm.isPressed()) {
+                if (sName.empty() && confirm.isPressed()) {
                     strcpy(errorMessage, "Error: Name cannot be empty!");
-                } else if (sID.length() != 9) {
+                } else if (sID.length() != 9 && confirm.isPressed()) {
                     strcpy(errorMessage, "Error: ID must be 9 digits!");
-                } else if (sID.substr(0, 4) != "7000") {
+                } else if (sID.substr(0, 4) != "7000" && confirm.isPressed()) {
                     strcpy(errorMessage, "Error: ID must start with 7000!");
                 } else {
                     student.setName(sName);
