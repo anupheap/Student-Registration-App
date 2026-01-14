@@ -5,7 +5,7 @@ echo ------------------------------------------------
 
 :: Creates Output Folder if it doesn't exist
 if not exist output mkdir output
-if not exist output\textures mkdir textures
+if not exist output\textures mkdir output\textures
 
 :: Makes sure opengl32.dll is in the output folder
 if exist output\opengl32.dll (
