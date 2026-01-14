@@ -43,7 +43,7 @@ int main()
     char confirmButtonClickedPath[] = "assets\\textures\\confirm_pressed.png";
     char orbitronPath[] = "assets\\fonts\\Orbitron-SemiBold.ttf";
     char sekuyaPath[] = "assets\\fonts\\Sekuya-Regular.ttf";
-    //Load Textures and Fonts
+    //Load Textures, Fonts and Logo
     Button confirm(confirmButtonDefaultPath, confirmButtonHoverPath, confirmButtonClickedPath);
     Font sekuya30 = LoadFontEx(sekuyaPath, 30, 0, 0);
     Font orbitron15 = LoadFontEx(orbitronPath, 15, 0, 0);
@@ -53,8 +53,9 @@ int main()
     {
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        
 
-        // --- SCREEN 1: LOGIN (START UP MODULE) ---
+        //LOGIN (START UP MODULE) ---
         if (currentScreen == SCREEN_LOGIN)
         {
             confirm.Draw({400, 300}, 2, 0);
