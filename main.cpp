@@ -42,11 +42,11 @@ int main()
     char confirmButtonHoverPath[] = "assets\\textures\\confirm_hover.png";
     char confirmButtonClickedPath[] = "assets\\textures\\confirm_pressed.png";
     char orbitronPath[] = "assets\\fonts\\Orbitron-SemiBold.ttf";
-    //Load Textures
+    char sekuyaPath[] = "assets\\fonts\\Sekuya-Regular.ttf";
+    //Load Textures and Fonts
     Button confirm(confirmButtonDefaultPath, confirmButtonHoverPath, confirmButtonClickedPath);
-    Font oribitron20 = LoadFontEx(orbitronPath, 20, 0, 0);
-    GenTextureMipmaps(&oribitron20.texture);
-    SetTextureFilter(oribitron20.texture, TEXTURE_FILTER_BILINEAR);
+    Font sekuya30 = LoadFontEx(sekuyaPath, 30, 0, 0);
+    Font orbitron15 = LoadFontEx(orbitronPath, 15, 0, 0);
     
     //Main Game Loop
     while (!WindowShouldClose())
@@ -58,15 +58,17 @@ int main()
         if (currentScreen == SCREEN_LOGIN)
         {
             confirm.Draw({400, 300}, 2, 0);
-            DrawTextEx(oribitron20,"STUDENT LOGIN", {320, 100}, 50, 3, DARKGRAY);
 
-            DrawText("Name:", 200, 185, 20, BLACK);
-            if (GuiTextBox((Rectangle){280, 180, 250, 30}, nameBuffer, 128, editName))
+            Vector2 titleTextScale = MeasureTextEx(sekuya30, "STUDENT LOGIN", 30.0f, 3.0f);
+            DrawTextEx(sekuya30, "STUDENT LOGIN", {(GetScreenWidth()/2)-(titleTextScale.x/2), (GetScreenHeight()/4)-(titleTextScale.y/2)}, 30.0f, 3.0f, BLACK);
+            Vector2 nameTextScale = MeasureTextEx(orbitron15, "Name:", 15.0f, 3.0f);
+            DrawTextEx(orbitron15, "Name:", {(GetScreenWidth()/5)-(nameTextScale.x/2), (GetScreenHeight()/3)-(nameTextScale.y/2)}, 15.0f, 3.0f, DARKGRAY);
+            Vector2 IDTextScale = MeasureTextEx(orbitron15, "ID:", 15.0f, 3.0f);
+            DrawTextEx(orbitron15, "ID:", {(GetScreenWidth()/5)-(nameTextScale.x/2), (GetScreenHeight()/3)-(nameTextScale.y/0.4f)}, 15.0f, 3.0f, DARKGRAY);
+
+            if (GuiTextBox((Rectangle){280, 180, 250, 30}, nameBuffer, 128, editName)){
                 editName = !editName;
-
-            DrawText("ID:", 200, 235, 20, BLACK);
-            if (GuiTextBox((Rectangle){280, 230, 250, 30}, idBuffer, 128, editID))
-                editID = !editID;
+            }
 
             // Validation Logic (Button)
             if (confirm.isPressed())
