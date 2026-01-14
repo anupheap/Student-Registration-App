@@ -32,6 +32,13 @@ Button::Button(char *texturePathStandalone, char *texturePathWhenHover, char *te
     SetTextureFilter(textureWhenClicked, TEXTURE_FILTER_POINT);
 }
 
+Button::~Button()
+{
+    UnloadTexture(textureStandalone);
+    UnloadTexture(textureWhenHover);
+    UnloadTexture(textureWhenClicked);
+}
+
 void Button::Draw(Vector2 buttonPos, float scale, float rot)
 {
     Rectangle sourceRect = {0.0f, 0.0f, (float)textureStandalone.width, (float)textureStandalone.height};

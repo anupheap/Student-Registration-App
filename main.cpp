@@ -1,11 +1,11 @@
-#include "raylib.h" // Pointing to your folder
+#include "raylib.h" 
 #define RAYGUI_IMPLEMENTATION
-#include "raygui.h"  // Your downloaded header
-#include "Student.h" // Your class
+#include "raygui.h"  
+#include "Student.h"
 #include <string>
 #include "elements.hpp"
 
-// Enum to manage which screen we are on
+//A list of screens with an enum
 typedef enum
 {
     SCREEN_LOGIN,
@@ -17,11 +17,9 @@ typedef enum
 
 int main()
 {
-    // 1. Setup Window
     InitWindow(800, 600, "Student Grouping System");
     SetTargetFPS(60);
-
-    // 2. Data Variables
+    
     Student student;
     GameScreen currentScreen = SCREEN_LOGIN;
 
@@ -38,18 +36,19 @@ int main()
 
     // Error Message State
     char errorMessage[128] = "";
-
-    // 4. Main Loop
+    
+    //Load Textures
+    Button confirm((char *)"textures/confirm_button.png", (char *)"textures/confirm_hover.png", (char *)"textures/confirm_pressed.png");
+    
+    //Main Game Loop
     while (!WindowShouldClose())
     {
-
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
         // --- SCREEN 1: LOGIN (START UP MODULE) ---
         if (currentScreen == SCREEN_LOGIN)
         {
-            Button confirm((char *)"textures/confirm_button.png", (char *)"textures/confirm_hover.png", (char *)"textures/confirm_pressed.png");
             confirm.Draw({400, 300}, 2, 0);
             DrawText("STUDENT LOGIN", 320, 100, 20, DARKGRAY);
 
