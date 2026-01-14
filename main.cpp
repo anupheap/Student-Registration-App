@@ -37,8 +37,16 @@ int main()
     // Error Message State
     char errorMessage[128] = "";
     
+    //Init Font and Texture Paths
+    char confirmButtonDefaultPath[] = "assets\\textures\\confirm_button.png";
+    char confirmButtonHoverPath[] = "assets\\textures\\confirm_hover.png";
+    char confirmButtonClickedPath[] = "assets\\textures\\confirm_pressed.png";
+    char orbitronPath[] = "assets\\fonts\\Orbitron-SemiBold.ttf";
     //Load Textures
-    Button confirm((char *)"textures/confirm_button.png", (char *)"textures/confirm_hover.png", (char *)"textures/confirm_pressed.png");
+    Button confirm(confirmButtonDefaultPath, confirmButtonHoverPath, confirmButtonClickedPath);
+    Font oribitron20 = LoadFontEx(orbitronPath, 20, 0, 0);
+    GenTextureMipmaps(&oribitron20.texture);
+    SetTextureFilter(oribitron20.texture, TEXTURE_FILTER_BILINEAR);
     
     //Main Game Loop
     while (!WindowShouldClose())
@@ -50,7 +58,7 @@ int main()
         if (currentScreen == SCREEN_LOGIN)
         {
             confirm.Draw({400, 300}, 2, 0);
-            DrawText("STUDENT LOGIN", 320, 100, 20, DARKGRAY);
+            DrawTextEx(oribitron20,"STUDENT LOGIN", {320, 100}, 50, 3, DARKGRAY);
 
             DrawText("Name:", 200, 185, 20, BLACK);
             if (GuiTextBox((Rectangle){280, 180, 250, 30}, nameBuffer, 128, editName))
