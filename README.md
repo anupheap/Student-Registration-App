@@ -7,8 +7,8 @@ GUI App
 
 ## 🛠 Prerequisites
 * **C++ Compiler:** Supports C++17 or higher
-* **Build System:** g++
+* **Build System:** cmake
 * **Dependencies:** raylib
 
 ## 📦 Building the Project
-To build the application from source, run the build.bat
+To build the application from source, use cmake
