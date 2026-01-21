@@ -131,7 +131,7 @@ int main()
                 nameToggle = !nameToggle;
             };
             DrawTextEx(orbitron30, IDText, {IDTextPos.x, IDTextPos.y}, subtitleScale, spacing, DARKGRAY);
-            if(GuiTextBox(IDInputBox, IDBuffer, 100, IDBoxToggle)){\
+            if(GuiTextBox(IDInputBox, IDBuffer, 100, IDBoxToggle)){
                 IDBoxToggle = !IDBoxToggle;
             };
             string ID = string(IDBuffer);
