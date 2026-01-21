@@ -7,13 +7,13 @@
 // Screens
 typedef enum
 {
-    SCREEN_LOGIN
+    SCREEN_LOGIN,
+    SEMESTER_SCREEN
 } GameScreen;
 
 // Main Program
 int main()
 {
-
     // Draw the Main Window
     InitWindow(1280, 720, "Student Registration System");
     SetTargetFPS(60);
@@ -58,14 +58,6 @@ int main()
             confirmButtonHoverPath,
             confirmButtonClickedPath
         );
-        //Initialize TextBox Buffers
-        char nameBuffer[128] = "";
-        char IDBuffer[128] = "";
-        bool nameBoxToggle = false;
-        bool IDBoxToggle = false;
-
-
-        
 
     SetWindowIcon(logo);
     //Text, Position, and Scale Variables so that we don't gouge our eyes out when reading the code cuz whAT THE FUCK
@@ -96,17 +88,29 @@ int main()
         };
         Rectangle nameInputBox = {
             GetScreenWidth()/2.8f,
-            GetScreenHeight()/1.885f - (getNameTextScale.y/2),
+            GetScreenHeight()/2.585f - (getNameTextScale.y/2),
             370,
             30
         };
         Rectangle IDInputBox = {
             GetScreenWidth()/2.8f,
-            GetScreenHeight()/2.585f - (getIDTextScale.y/2),
+            GetScreenHeight()/1.885f - (getIDTextScale.y/2),
             370,
             30
         };
-    
+        
+    //Initialize TextBox Buffers
+    char errorMessageForName[200] = "\0";
+    char errorMessageForID[200] = "\0";
+    char nameBuffer[128] = "\0";
+    char IDBuffer[128] = "";
+    bool nameToggle = false;
+    bool IDBoxToggle = false;
+
+    //Initialize Validifiers
+    bool nameValidity = false;
+    bool IDValidity = false;
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
@@ -115,23 +119,91 @@ int main()
         //====LOGIN-SCREEN====
         if (currentScreen == SCREEN_LOGIN)
         {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            int errorMessageForNameLength = MeasureText(errorMessageForName, 30);
+            int errorMessageForNamePosY = (GetScreenHeight()/2 - 15)*1.75f;
+            int errorMessageForIDLength = MeasureText(errorMessageForID, 30);
+            int errorMessageForIDPosY = (GetScreenHeight()/2 - 15) * 1.95f;
+            
             DrawTextEx(sekuya40, studentLoginText,{studentLoginTextPos.x, studentLoginTextPos.y}, titleScale, spacing, BLACK);
             DrawTextEx(orbitron30, nameText, {nameTextPos.x, nameTextPos.y}, subtitleScale, spacing, DARKGRAY);
-            if(GuiTextBox(nameInputBox, nameBuffer, 100, nameBoxToggle)) nameBoxToggle = !nameBoxToggle;
-            string name = nameBuffer;
+            if(GuiTextBox(nameInputBox, nameBuffer, 128, nameToggle)){
+                nameToggle = !nameToggle;
+            };
             DrawTextEx(orbitron30, IDText, {IDTextPos.x, IDTextPos.y}, subtitleScale, spacing, DARKGRAY);
-            if(GuiTextBox(IDInputBox, IDBuffer, 100, IDBoxToggle)) IDBoxToggle = !IDBoxToggle;
-            string ID = IDBuffer;
-            next.Draw({(float)GetScreenWidth()/2, (float)GetScreenHeight()/1.4f}, 2, 0);
+            if(GuiTextBox(IDInputBox, IDBuffer, 100, IDBoxToggle)){\
+                IDBoxToggle = !IDBoxToggle;
+            };
+            string ID = string(IDBuffer);
+            next.Draw({(float)GetScreenWidth()/2, (float)GetScreenHeight()/1.6f}, 2, 0);
+        
             if(next.isPressed()){
-                if(name.empty()){
-                    DrawText("Name is Empty!", GetScreenWidth()/2, GetScreenHeight()/2, 30, DARKGREEN);
-                } else if (ID.length() != 9){
-                    DrawText("ID must be 9 digits!", GetScreenWidth()/2, GetScreenHeight()/2, 30, DARKGREEN);
-                }else if (ID.substr(0, 4) != "7000"){
-                    DrawText("ID should follow the format 7000XXXXX", GetScreenWidth()/2, GetScreenHeight()/2, 30, DARKGREEN);
-                }   
+                switch (nameInputValidation(nameBuffer)){
+                    case (IS_EMPTY):
+                        strcpy(errorMessageForName, "[ERROR]\tYour name is Empty!");
+                        nameValidity = false;
+                        break;
+                    case (HAS_PRECEDING_WHITESPACE):
+                        strcpy(errorMessageForName, "[ERROR]\tPlease Remove the Preceding Whitespace(s)!");
+                        nameValidity = false;
+                        break;
+                    case (HAS_PROCEDING_WHITESPACE):
+                        strcpy(errorMessageForName, "[ERROR]\tPlease remove the Proceding whitespace(s)!");
+                        nameValidity = false;
+                        break;
+                    case (HAS_INBETWEEN_WHITESPACE):
+                        strcpy(errorMessageForName, "[ERROR]\tPlease remove the additional whitespace(s)!");
+                        nameValidity = false;
+                        break;
+                    case (HAS_NUMBERS):
+                        strcpy(errorMessageForName, "[ERROR]\tText has numbers!");
+                        nameValidity = false;
+                        break;
+                    case (HAS_SYMBOLS):
+                        strcpy(errorMessageForName, "[ERROR]\tInvalid Character(s)!");
+                        nameValidity = false;
+                        break;
+                    default:
+                        nameValidity = true;
+                        strcpy(errorMessageForName, "\0");
+                }
+                
+                switch (IDinputValidation(IDBuffer)){
+                    case INVALID_ID_FORMAT:
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should be in 7000XXXXX format!");
+                        IDValidity = false;
+                        break;
+                    case IS_EMPTY:
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID is Empty!");
+                        IDValidity = false;
+                        break;
+                    case INSUFFICIENT_CHARACTERS:
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID is not exactly 9 digits!");
+                        IDValidity = false;
+                        break;
+                    case HAS_WHITESPACE:
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should not have a Whitespace(s)!");
+                        IDValidity = false;
+                        break;
+                    case HAS_ALPHA_AND_OR_SYMBOLS:
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should only contain Digits!");
+                        IDValidity = false;
+                        break;
+                    default:
+                        IDValidity = true;
+                        strcpy(errorMessageForID, "\0");
+                }
             }
+            if (nameValidity && IDValidity){
+                currentScreen = SEMESTER_SCREEN; 
+            } else {
+                DrawText(errorMessageForName, 10, errorMessageForNamePosY, 30, RED);
+                DrawText(errorMessageForID, 10, errorMessageForIDPosY, 30, RED);
+            }
+        }
+        if (currentScreen == SEMESTER_SCREEN){
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            DrawText("AAAAAAAAARRRRRRRRMMMMMMM BOOOOOOOOOOOOOOOOOOOOOOY!!!!!!!", 0, GetScreenHeight()/2, 30, GREEN);
         }
         EndDrawing();
     }
