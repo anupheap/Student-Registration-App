@@ -139,36 +139,43 @@ int main()
         
             if(next.isPressed()){
                 switch (nameInputValidation(nameBuffer)){
-                    case (IS_EMPTY):
+                    case (IS_EMPTY):{
                         strcpy(errorMessageForName, "[ERROR]\tYour name is Empty!");
                         nameValidity = false;
                         break;
-                    case (HAS_PRECEDING_WHITESPACE):
+                    }
+                    case (HAS_PRECEDING_WHITESPACE):{
                         strcpy(errorMessageForName, "[ERROR]\tPlease Remove the Preceding Whitespace(s)!");
                         nameValidity = false;
                         break;
-                    case (HAS_PROCEDING_WHITESPACE):
+                    }
+                    case (HAS_PROCEDING_WHITESPACE):{
                         strcpy(errorMessageForName, "[ERROR]\tPlease remove the Proceding whitespace(s)!");
                         nameValidity = false;
                         break;
-                    case (HAS_INBETWEEN_WHITESPACE):
+                    }
+                    case (HAS_INBETWEEN_WHITESPACE):{
                         strcpy(errorMessageForName, "[ERROR]\tPlease remove the additional whitespace(s)!");
                         nameValidity = false;
                         break;
-                    case (HAS_NUMBERS):
+                    }
+                    case (HAS_NUMBERS):{
                         strcpy(errorMessageForName, "[ERROR]\tText has numbers!");
                         nameValidity = false;
                         break;
-                    case (HAS_SYMBOLS):
+                    }
+                    case (HAS_SYMBOLS):{
                         strcpy(errorMessageForName, "[ERROR]\tInvalid Character(s)!");
                         nameValidity = false;
                         break;
-                    default:
+                    }
+                    default:{
                         nameValidity = true;
                         strcpy(errorMessageForName, "\0");
+                    }
                 }
                 
-                switch (IDinputValidation(IDBuffer)){
+                switch (IDInputValidation(IDBuffer)){
                     case INVALID_ID_FORMAT:
                         strcpy(errorMessageForID, "[ERROR]\tYour ID should be in 7000XXXXX format!");
                         IDValidity = false;
@@ -207,4 +214,5 @@ int main()
         }
         EndDrawing();
     }
+    return 0;
 }
