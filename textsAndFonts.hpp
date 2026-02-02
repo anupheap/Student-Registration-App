@@ -47,6 +47,10 @@ class texts{
         char semesterDetailsText[17] = "SEMESTER DETAILS";
         char semesterText[16] = "Semester (1-3):";
         char yearText[6] = "Year:";
+
+        //testing
+        char mainMenuText[10] = "Main Menu";
+
     //Text Scales
         Vector2 getStudentLoginTextScale;
         Vector2 getFirstNameTextScale;
@@ -56,6 +60,10 @@ class texts{
         Vector2 getSemesterDetailsTextScale;
         Vector2 getSemesterTextScale;
         Vector2 getYearTextScale;
+
+        // testing
+         Vector2 getMainMenuTextScale;
+
     //Text Position
         Vector2 studentLoginTextPos;
         Vector2 firstNameTextPos;
@@ -65,6 +73,11 @@ class texts{
         Vector2 semesterDetailsTextPos;
         Vector2 semesterTextPos;
         Vector2 yearTextPos;
+
+
+        //testing 
+        Vector2 mainMenuTextPos;
+
 
     texts(textFonts &f) : font(f){
         getStudentLoginTextScale = MeasureTextEx(font.torus50, studentLoginText, titleScale, spacing);
@@ -76,6 +89,10 @@ class texts{
         getSemesterTextScale = MeasureTextEx(font.torus30, semesterText, subtitleScale, spacing);
         getYearTextScale = MeasureTextEx(font.torus30, yearText, subtitleScale, spacing);
         
+        //testing 
+        getMainMenuTextScale = MeasureTextEx(font.torus30, mainMenuText, titleScale, spacing);
+
+
         studentLoginTextPos = {
             (GetScreenWidth()/2) - (getStudentLoginTextScale.x/2),
             (GetScreenHeight()/5) - (getStudentLoginTextScale.y/2)
@@ -107,6 +124,12 @@ class texts{
         yearTextPos = {
             semesterTextPos.x + getSemesterTextScale.x - getYearTextScale.x, 
             semesterTextPos.y + 80
+        };
+
+        //testing
+        mainMenuTextPos = {
+            (GetScreenWidth()/2) - (getMainMenuTextScale.x/2),
+            (GetScreenHeight()/5) - (getMainMenuTextScale.y/2)
         };
     }
 };

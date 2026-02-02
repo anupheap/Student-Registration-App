@@ -418,11 +418,54 @@ int main()
                 }
             }
             if(semesterValidity && yearValidity){
-                currentScreen = REGISTRATION_SCREEN;
+                currentScreen = MAIN_MENU;
             }else{
                 DrawText(errorMessageForSemester, 10, errorMessageForSemesterPosY, 20, RED);
                 DrawText(errorMessageForYear, 10, errorMessageForYearPosY, 20, RED);
             }
+        }
+
+        // NEEDS WORK HERE  **NEEDS TEXTURES** 
+        if (currentScreen == MAIN_MENU)
+        {
+
+            // Button Calls
+            // REGISTER BUTTON PATHS !! NEEDS TEXTURES !! CURRENTLY USING PLACEHOLDER TEXTURES !!
+            char registerButtonPath[] = "assets\\textures\\confirm_button.png";
+            char registerButtonHoverPath[] = "assets\\textures\\confirm_button_hover.png";
+            char registerButtonClickedPath[] = "assets\\textures\\button_pressed.png";
+            // Register Button
+            Button registerButton(
+                registerButtonPath,
+                registerButtonHoverPath,
+                registerButtonClickedPath);
+            
+            // VIEWRECORD BUTTON PATHS !! NEEDS TEXTURES !! CURRENTLY USING PLACEHOLDER TEXTURES !!
+            char viewRecordButtonPath[] = "assets\\textures\\confirm_button.png";
+            char viewRecordButtonHoverPath[] = "assets\\textures\\confirm_button_hover.png";
+            char viewRecordButtonClickedPath[] = "assets\\textures\\button_pressed.png";
+            // ViewRecord Button
+            Button viewRecordButton(
+                viewRecordButtonPath,
+                viewRecordButtonHoverPath,
+                viewRecordButtonClickedPath);
+
+            // EXIT BUTTON PATHS !! NEEDS TEXTURES !! CURRENTLY USING PLACEHOLDER TEXTURES !!
+            char exitButtonPath[] = "assets\\textures\\confirm_button.png";
+            char exitButtonHoverPath[] = "assets\\textures\\confirm_button_hover.png";
+            char exitButtonClickedPath[] = "assets\\textures\\button_pressed.png";
+            // Exit Button
+            Button exitButton(
+                exitButtonPath,
+                exitButtonHoverPath,
+                exitButtonClickedPath);
+
+            DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
+
+            //Draw Buttons
+            registerButton.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y}, 0.3f, 0);
+            viewRecordButton.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 100}, 0.3f, 0);
+            exitButton.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 200}, 0.3f, 0);
         }
         EndDrawing();
     }
