@@ -1,7 +1,7 @@
 #ifndef TEXTSANDFONTS_HPP
 #define TEXTSANDFONTS_HPP
 
-#include "include\raylib.h"
+#include "raylib.h"
 
 class textFonts{
     private:

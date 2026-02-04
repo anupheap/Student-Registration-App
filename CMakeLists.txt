@@ -8,10 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output")
 
 include_directories(include)
+include_directories(src)
 link_directories(lib)
 
 # Define Executables
-add_executable(${PROJECT_NAME} WIN32 main1.cpp)
+add_executable(${PROJECT_NAME} WIN32 src/main1.cpp)
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} raylib opengl32 gdi32 winmm)
