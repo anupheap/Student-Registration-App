@@ -4,7 +4,8 @@
 #include "student.h"
 #include "buttonsAndTextFields.hpp"
 #include "textsAndFonts.hpp"
-#include "student.h"
+#define REASINGS_IMPLEMENTATION
+#include "reasings.h"
 
 // Screens
 typedef enum
@@ -146,7 +147,6 @@ int main()
     bool middleNameValidity = false;
     bool lastNameValidity = false;
     bool IDValidity = false;
-    bool semesterValidity = false;
     bool yearValidity = false;
     Color white = WHITE;
     Color purple = {140, 102, 255, 255};
@@ -154,7 +154,12 @@ int main()
     Color baseColor = {36, 34, 43, 255};
     Color baseTextColor = {150, 140, 171, 255};
     Color focusedTextColor = {204, 193, 230, 255};
+    Color registerBar = {172, 247, 98, 255};
+    Color viewOrPrintBar = {102, 204, 255, 255};
     int semesterSelection = 0;
+    float animTimer = 0.0f;
+    float animEnd = 0.25f;
+    
 
     while (!WindowShouldClose())
     {
@@ -182,7 +187,7 @@ int main()
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_FOCUSED, ColorToInt(focusedTextColor));
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_NORMAL, ColorToInt(baseTextColor));
-
+        bool hoverAnyButton = false;
         //====LOGIN-SCREEN====
         if (currentScreen == SCREEN_LOGIN)
         {
@@ -222,7 +227,12 @@ int main()
             {
                 IDBoxToggle = !IDBoxToggle;
             };
-            next.Draw({(float)GetScreenWidth() / 2, (float)GetScreenHeight() / 1.34f}, 0.3f, 0);
+            if(next.Draw({(float)GetScreenWidth() / 2, (float)GetScreenHeight() / 1.34f}, 0.3f, 0)) hoverAnyButton = true;
+            if (hoverAnyButton){
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+            } else {
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            }
 
             if (next.isPressed())
             {
@@ -404,7 +414,6 @@ int main()
             int errorMessageForSemesterPosY = (GetScreenHeight() / 2 - 10) * 1.85f;
             int errorMessageForYearPosY = (GetScreenHeight() / 2 - 10) * 1.95f;
 
-            semesterValidity = false;
             yearValidity = false;
 
             DrawTextEx(font.torus50, text.semesterDetailsText, text.semesterDetailsTextPos, text.titleScale, text.spacing, white);
@@ -414,7 +423,12 @@ int main()
             if (GuiDropdownBox(semesterInputBox, "1;2;3", &semesterSelection, semesterToggle)) semesterToggle = !semesterToggle;
             DrawTextEx(font.torus30, text.yearText, text.yearTextPos, text.subtitleScale, text.spacing, white);
             if (GuiTextBox(yearInputBox, yearBuffer, 5, yearToggle)) yearToggle = !yearToggle;
-            confirm.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 130}, 0.3f, 0);
+            if(confirm.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 130}, 0.3f, 0)) hoverAnyButton = true;
+            if (hoverAnyButton){
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+            } else {
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            }
             if (confirm.isPressed())
             {
                 switch(yearInputValidation(yearBuffer)){
@@ -447,34 +461,22 @@ int main()
                 DrawText(errorMessageForYear, 10, errorMessageForYearPosY, 20, RED);
             }
         }
- 
+
+        // NEEDS WORK HERE  **NEEDS TEXTURES** 
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
             //Draw Buttons
-            DrawRectangle(0, GetScreenHeight() - 70, GetScreenWidth(), 70, baseColor);
-            Rectangle viewOrPrintButtonCol = {
-                (GetScreenWidth()/2) + 415.0f,
-                GetScreenHeight() - 98.8f,
-                viewOrPrintButtonTexture.width * 0.4f,
-                viewOrPrintButtonTexture.height * 0.4f
-            };
-            Rectangle exitButtonCol = {
-                (GetScreenWidth()/2) - 585.0f,
-                GetScreenHeight() - 98.8f,
-                exitButtonTexture.width * 0.4f,
-                exitButtonTexture.height * 0.4f
-            };
-            viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 500, (float)GetScreenHeight() - 49.4f}, 0.4f, 0);
-            exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 49.4f}, 0.4f, 0);
-            registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 49.4f}, 0.4f, 0);
-            if((CheckCollisionPointRec(GetMousePosition(), viewOrPrintButtonCol)) || CheckCollisionPointRec(GetMousePosition(), exitButtonCol)){
+            DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
+            if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
+            if (registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 1)) hoverAnyButton = true;
+            if (viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 2)) hoverAnyButton = true;
+            if(hoverAnyButton){
                 SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+            } else {
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
         }
-        if (currentScreen == REGISTRATION_SCREEN){
-
-        };
         EndDrawing();
     }
     return 0;

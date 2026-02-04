@@ -6,6 +6,7 @@
 #include <thread>
 #include <cctype>
 #include "raylib.h"
+#include "reasings.h"
 
 const int IS_EMPTY = 101;
 const int HAS_NUMBERS = 102;
@@ -19,11 +20,12 @@ const int INVALID_ID_FORMAT = 109;
 const int HAS_WHITESPACE = 110;
 const int INVALID_CHOICE_FOR_SEMESTER = 111;
 
+
 int nameInputValidation(char* textInput);
 int IDInputValidation(char* numberInput);
 int semesterInputValidation(char* semesterInput);
 int yearInputValidation(char* yearInput);
-
+bool toggleState[3] = {false, false, false};
 class Button
 {
 private:
@@ -36,11 +38,20 @@ private:
     Texture2D textureWhenClicked;
     float colBoxWidth;
     float colBoxHeight;
+    float animTimer = 0.0f;
+    float animEnd = 0.25f;
+    float currentScale = 1.0f;
+    float scaleIncreaseFactor = 0.05f;
+    float YOffset = 0.0f;
+    float wasClicked = false;
+    Rectangle destinationRect;
+    Rectangle collisionBox;
 
 public:
     Button(char *texturePathStandalone, char *texturePathWhenHover, char *texturePathWhenClicked);
     ~Button();
-    void Draw(Vector2 buttonPos, float scale, float rot);
+    bool Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber);
+    bool Draw(Vector2 buttonPos, float scale, float rot);
     bool isPressed();
 };
 
@@ -64,45 +75,94 @@ Button::~Button()
     UnloadTexture(textureWhenClicked);
 }
 
-void Button::Draw(Vector2 buttonPos, float scale, float rot)
+bool Button::Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber)
 {
+    collisionBox = {collisionBoxPosition.x, collisionBoxPosition.y, colBoxWidth, colBoxHeight};
+    bool hoveringOverButton = CheckCollisionPointRec(GetMousePosition(), collisionBox);
+    float deltaTime = GetFrameTime();
+    float YOffsetCap = ((float)(textureStandalone.height * (scale + scaleIncreaseFactor))  - (float)(textureStandalone.height * scale))/2.0f;
+
+    if (hoveringOverButton){
+        animTimer += deltaTime;
+    } else {
+        animTimer -= deltaTime;
+    }
+    if(animTimer > animEnd) animTimer = animEnd;
+    if (animTimer < 0) animTimer = 0;
+
+    currentScale = EaseBackOut(animTimer, scale, scaleIncreaseFactor, animEnd);
+    YOffset = EaseBackOut(animTimer, 0.0f, YOffsetCap, 0.25f);
     Rectangle sourceRect = {0.0f, 0.0f, (float)textureStandalone.width, (float)textureStandalone.height};
-    Rectangle destinationRect = {(float)buttonPos.x, (float)buttonPos.y, (float)textureStandalone.width * scale, (float)textureStandalone.height * scale};
+    destinationRect = {(float)buttonPos.x, (float)buttonPos.y - YOffset, colBoxWidth, colBoxHeight};
+    
+    Vector2 origin = {destinationRect.width/2.0f, destinationRect.height/2.0f};
 
-    collisionBoxPosition = {(float)buttonPos.x - ((float)textureStandalone.width / 2 * scale), (float)buttonPos.y - ((float)textureStandalone.height / 2 * scale)};
+    colBoxWidth = (float)textureStandalone.width * currentScale;
+    colBoxHeight = (float)textureStandalone.height * currentScale;
+    
+    //DrawRectangleRec(collisionBox, RED);
+    collisionBoxPosition = {(float)buttonPos.x - (float)origin.x - YOffset, (float)buttonPos.y - (float)origin.y - YOffset}; 
 
-    colBoxWidth = (float)textureStandalone.width * scale;
-    colBoxHeight = (float)textureStandalone.height * scale;
-
-    Rectangle collisionBox = {collisionBoxPosition.x, collisionBoxPosition.y, colBoxWidth, colBoxHeight};
-
-    Vector2 origin = {(float)textureStandalone.width / 2 * scale, (float)textureStandalone.height / 2 * scale};
-
-    if ((CheckCollisionPointRec(GetMousePosition(), collisionBox)) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
-        DrawTexturePro(textureWhenClicked, sourceRect, destinationRect, origin, 0, WHITE);
-    } else if (CheckCollisionPointRec(GetMousePosition(), collisionBox)){
-        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        DrawTexturePro(textureWhenHover, sourceRect, destinationRect, origin, 0, WHITE);
-    } else if (GetKeyPressed() == KEY_ENTER){
-        DrawTexturePro(textureWhenHover, sourceRect, destinationRect, origin, 0, WHITE);
+    Texture2D currentButtonTexture = textureStandalone;
+    if(hoveringOverButton){
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            wasClicked = !wasClicked;
+            toggleState[0] = false;
+            toggleState[1] = false;
+            toggleState[2] = false;
+            toggleState[toggleNumber] = true;
+        }
+        currentButtonTexture = (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) ? textureWhenClicked : textureWhenHover;
     }
-    else
-    {
-        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-        DrawTexturePro(textureStandalone, sourceRect, destinationRect, origin, 0, WHITE);
+    if(toggleState[toggleNumber] && wasClicked){
+        DrawTexturePro(textureWhenClicked, sourceRect, {(float)buttonPos.x, (float)buttonPos.y - YOffsetCap, (float)textureStandalone.width * 0.4f, (float)textureStandalone.height * 0.4f}, {(float)(textureStandalone.width * 0.4f)/2.0f, (float)(textureStandalone.height * 0.4f)/2.0f}, 0, WHITE);
+    }else {
+        DrawTexturePro(currentButtonTexture, sourceRect, destinationRect, origin, 0, WHITE);
     }
+    return hoveringOverButton;
+}
+bool Button::Draw(Vector2 buttonPos, float scale, float rot)
+{
+    collisionBox = {collisionBoxPosition.x, collisionBoxPosition.y, colBoxWidth, colBoxHeight};
+    bool hoveringOverButton = CheckCollisionPointRec(GetMousePosition(), collisionBox);
+    float deltaTime = GetFrameTime();
+    float YOffsetCap = ((float)(textureStandalone.height * (scale + scaleIncreaseFactor))  - (float)(textureStandalone.height * scale))/2.0f;
+
+    if (hoveringOverButton){
+        animTimer += deltaTime;
+    } else {
+        animTimer -= deltaTime;
+    }
+    if(animTimer > animEnd) animTimer = animEnd;
+    if (animTimer < 0) animTimer = 0;
+
+    currentScale = EaseBackOut(animTimer, scale, scaleIncreaseFactor, animEnd);
+    YOffset = EaseBackOut(animTimer, 0.0f, YOffsetCap, 0.25f);
+    Rectangle sourceRect = {0.0f, 0.0f, (float)textureStandalone.width, (float)textureStandalone.height};
+    destinationRect = {(float)buttonPos.x, (float)buttonPos.y, colBoxWidth, colBoxHeight};
+    
+    Vector2 origin = {destinationRect.width/2.0f, destinationRect.height/2.0f};
+
+    colBoxWidth = (float)textureStandalone.width * currentScale;
+    colBoxHeight = (float)textureStandalone.height * currentScale;
+    
+    //DrawRectangleRec(collisionBox, RED);
+    collisionBoxPosition = {(float)buttonPos.x - (float)origin.x - YOffset, (float)buttonPos.y - (float)origin.y - YOffset}; 
+
+    Texture2D currentButtonTexture = textureStandalone;
+    if(hoveringOverButton){
+        currentButtonTexture = (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) ? textureWhenClicked : textureWhenHover;
+    }
+    DrawTexturePro(currentButtonTexture, sourceRect, destinationRect, origin, 0, WHITE);
+    return hoveringOverButton;
 }
 
 bool Button::isPressed()
 {
-    Rectangle collisionBox = {collisionBoxPosition.x, collisionBoxPosition.y, colBoxWidth, colBoxHeight};
-
-    if (((CheckCollisionPointRec(GetMousePosition(), collisionBox)) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) || GetKeyPressed() == KEY_ENTER)
-    {
+    if (((CheckCollisionPointRec(GetMousePosition(), collisionBox)) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
 }

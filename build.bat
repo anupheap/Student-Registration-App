@@ -1,12 +1,17 @@
 @echo off
 SET "BUILD_DIR=build"
 SET "OUTPUT_DIR=output"
-SET "GENERATOR=MinGW Makefiles" 
+SET "GENERATOR=Ninja" 
 
 REM --- Step 1: Run CMake to configure the project ---
 echo [STEP 1] Configuring project with CMake...
 cmake -S . -B "%BUILD_DIR%" -G "%GENERATOR%"
-
+IF %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] CMake configuration failed with Ninja. Switching generator.
+    pause
+    SET "GENERATOR=MinGW Makefiles"
+    cmake -S . -B "%BUILD_DIR%" -G "%GENERATOR%"
+)
 IF %ERRORLEVEL% NEQ 0 (
     echo [ERROR] CMake configuration failed. Exiting.
     pause
