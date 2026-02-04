@@ -447,8 +447,7 @@ int main()
                 DrawText(errorMessageForYear, 10, errorMessageForYearPosY, 20, RED);
             }
         }
-
-        // NEEDS WORK HERE  **NEEDS TEXTURES** 
+ 
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
@@ -473,6 +472,9 @@ int main()
                 SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
             }
         }
+        if (currentScreen == REGISTRATION_SCREEN){
+
+        };
         EndDrawing();
     }
     return 0;
