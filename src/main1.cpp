@@ -476,6 +476,9 @@ int main()
             } else {
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton) {
+                for (int i = 0; i < 3; i++) toggleState[i] = false;
+            }
         }
         EndDrawing();
     }
