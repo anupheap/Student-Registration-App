@@ -30,17 +30,21 @@ private:
 
 public:
     // Setters
-    void setName(char firstName[200], char lastName[200]){
+    char* setName(char firstName[200], char lastName[200]){
         strcpy(name, firstName);
         strcat(name, " ");
         strcat(name, lastName);
+        strcat(name, "!");
+        return name;
     }
-    void setName(char firstName[200], char middleName[200], char lastName[200]){
+    char* setName(char firstName[200], char middleName[200], char lastName[200]){
         strcpy(name, firstName);
         strcat(name, " ");
         strcat(name, middleName);
         strcat(name, " ");
         strcat(name, lastName);
+        strcat(name, "!");
+        return name;
     }
     void setID(char ID[128]) { strcpy(id, ID); }
     void setSemester(int s, char y[5]) { semester = s; year = y; }

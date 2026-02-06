@@ -6,6 +6,8 @@
 #include "textsAndFonts.hpp"
 #define REASINGS_IMPLEMENTATION
 #include "reasings.h"
+#include "variables.hpp"
+#include "mainMenuElements.hpp"
 
 // Screens
 typedef enum
@@ -13,7 +15,8 @@ typedef enum
     SCREEN_LOGIN,
     SEMESTER_SCREEN,
     MAIN_MENU,
-    REGISTRATION_SCREEN
+    REGISTRATION_SCREEN,
+    DEVELOPER_INFO
 } Screen;
 
 // Main Program
@@ -46,6 +49,13 @@ int main()
     char exitButtonWhenHoverPath[] = "assets\\textures\\exit_button_hover.png";
     char exitButtonWhenClickedPath[] = "assets\\textures\\exit_button_clicked.png";
     Image exitButtonTexture = LoadImage(exitButtonPath);
+    char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
+    Image mainMenuRegistrationPanelA = LoadImage(mainMenuRegistrationPanelAPath);
+    ImageResizeCanvas(&mainMenuRegistrationPanelA, mainMenuRegistrationPanelA.width/2, mainMenuRegistrationPanelA.height/2, 0, 0, BLANK);
+    Texture2D registrationPanelA = LoadTextureFromImage(mainMenuRegistrationPanelA);
+    GenTextureMipmaps(&registrationPanelA);
+    SetTextureFilter(registrationPanelA, TEXTURE_FILTER_TRILINEAR);
+
     // App Icon
     char logoPath[] = "assets\\textures\\student_registration_logo.png";
     Image logo = LoadImage(logoPath);
@@ -83,6 +93,7 @@ int main()
         exitButtonWhenHoverPath,
         exitButtonWhenClickedPath
     );
+    
     SetWindowIcon(logo);
 
     Rectangle firstNameInputBox = {
@@ -154,11 +165,14 @@ int main()
     Color baseColor = {36, 34, 43, 255};
     Color baseTextColor = {150, 140, 171, 255};
     Color focusedTextColor = {204, 193, 230, 255};
-    Color registerBar = {172, 247, 98, 255};
-    Color viewOrPrintBar = {102, 204, 255, 255};
+    
+    Color viewOrPrintBarColor = {102, 204, 255, 255};
+    Color registrationBarColor = {172, 247, 98, 255};
     int semesterSelection = 0;
     float animTimer = 0.0f;
     float animEnd = 0.25f;
+    Bars registrationBar(registrationBarColor);
+    Bars viewOrPrintBar(viewOrPrintBarColor);
     
 
     while (!WindowShouldClose())
@@ -393,9 +407,9 @@ int main()
             if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
             {
                 if(strlen(middleNameBuffer) == 0){
-                    student.setName(firstNameBuffer, lastNameBuffer);
+                    strcpy(name, student.setName(firstNameBuffer, lastNameBuffer));
                 } else{
-                    student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
+                    strcpy(name, student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer));
                 }
                 student.setID(IDBuffer);
                 currentScreen = SEMESTER_SCREEN;
@@ -466,7 +480,27 @@ int main()
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
-            //Draw Buttons
+            
+            if(toggleState[0]){
+                hoverAnyButton = false;
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                currentScreen = DEVELOPER_INFO;
+            }
+            registrationBar.Draw(1);
+            viewOrPrintBar.Draw(2);
+            if(toggleState[1]){
+                DrawTextEx(font.torus30, text.registrationText, {text.registrationTextPos.x, text.registrationTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
+                Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
+                Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
+                DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                DrawTextureEx(registrationPanelA, {0, 198}, 0, 1, WHITE);
+            }
+            if(toggleState[2]){
+                DrawTextEx(font.torus30, text.viewOrPrintText, {text.viewOrPrintTextPos.x, text.viewOrPrintTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
+                Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
+                Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.viewOrPrintTextPos.y + 30)};
+                DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+            }
             DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
             if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
             if (registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 1)) hoverAnyButton = true;
@@ -479,6 +513,7 @@ int main()
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton) {
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
             }
+            
         }
         EndDrawing();
     }

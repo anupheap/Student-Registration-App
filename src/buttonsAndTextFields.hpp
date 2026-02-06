@@ -108,8 +108,12 @@ bool Button::Draw(Vector2 buttonPos, float baseScale, float rot, int toggleNumbe
     };
     
     if(hoveringOverButton && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-        for(int i = 0; i < 3; i++){
-            toggleState[i] = (i == toggleNumber);
+        if(toggleState[toggleNumber]){
+            toggleState[toggleNumber] = !toggleState[toggleNumber];
+        }else{
+            for(int i = 0; i < 3; i++){
+                toggleState[i] = (i == toggleNumber);
+            }
         }
     }
     if(toggleState[toggleNumber]){

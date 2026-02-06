@@ -50,6 +50,8 @@ class texts{
 
         //testing
         char mainMenuText[10] = "Main Menu";
+        char registrationText[32] = "Welcome to the Grouping Module,";
+        char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
 
     //Text Scales
         Vector2 getStudentLoginTextScale;
@@ -62,8 +64,9 @@ class texts{
         Vector2 getYearTextScale;
 
         // testing
-         Vector2 getMainMenuTextScale;
-
+        Vector2 getMainMenuTextScale;
+        Vector2 getRegistrationTextScale;
+        Vector2 getViewOrPrintTextScale;
     //Text Position
         Vector2 studentLoginTextPos;
         Vector2 firstNameTextPos;
@@ -77,6 +80,8 @@ class texts{
 
         //testing 
         Vector2 mainMenuTextPos;
+        Vector2 registrationTextPos;
+        Vector2 viewOrPrintTextPos;
 
 
     texts(textFonts &f) : font(f){
@@ -91,6 +96,8 @@ class texts{
         
         //testing 
         getMainMenuTextScale = MeasureTextEx(font.torus30, mainMenuText, titleScale, spacing);
+        getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
+        getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
 
 
         studentLoginTextPos = {
@@ -130,6 +137,14 @@ class texts{
         mainMenuTextPos = {
             (GetScreenWidth()/2) - (getMainMenuTextScale.x/2),
             (GetScreenHeight()/5) - (getMainMenuTextScale.y/2)
+        };
+        registrationTextPos = {
+            (GetScreenWidth()/2) - (getRegistrationTextScale.x/2),
+            (GetScreenHeight()/5) - (subtitleScale/2)
+        };
+        viewOrPrintTextPos = {
+            (GetScreenWidth()/2) - (getViewOrPrintTextScale.x/2),
+            (GetScreenHeight()/5) - (subtitleScale/2)
         };
     }
 };
