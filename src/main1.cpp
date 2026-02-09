@@ -51,18 +51,7 @@ int main()
     char exitButtonWhenClickedPath[] = "assets\\textures\\exit_button_clicked.png";
     Image exitButtonTexture = LoadImage(exitButtonPath);
     char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
-    Image mainMenuRegistrationPanelA = LoadImage(mainMenuRegistrationPanelAPath);
-    ImageResize(&mainMenuRegistrationPanelA, (mainMenuRegistrationPanelA.width/2) - 70, (mainMenuRegistrationPanelA.height/2) - 70);
-    Texture2D registrationPanelA = LoadTextureFromImage(mainMenuRegistrationPanelA);
-    GenTextureMipmaps(&registrationPanelA);
-    SetTextureFilter(registrationPanelA, TEXTURE_FILTER_TRILINEAR);
-
     char mainMenuRegistrationPanelBPath[] = "assets\\textures\\par2.png";
-    Image mainMenuRegistrationPanelB = LoadImage(mainMenuRegistrationPanelBPath);
-    ImageResize(&mainMenuRegistrationPanelB, (mainMenuRegistrationPanelB.width/2) - 70, (mainMenuRegistrationPanelB.height/2) - 70);
-    Texture2D registrationPanelB = LoadTextureFromImage(mainMenuRegistrationPanelB);
-    GenTextureMipmaps(&registrationPanelB);
-    SetTextureFilter(registrationPanelB, TEXTURE_FILTER_TRILINEAR);
 
     // App Icon
     char logoPath[] = "assets\\textures\\student_registration_logo.png";
@@ -181,7 +170,8 @@ int main()
     float animEnd = 0.25f;
     Bars registrationBar(registrationBarColor);
     Bars viewOrPrintBar(viewOrPrintBarColor);
-    
+    Panels registrationPanelA(mainMenuRegistrationPanelAPath);
+    Panels registrationPanelB(mainMenuRegistrationPanelBPath);
 
     while (!WindowShouldClose())
     {
@@ -494,15 +484,16 @@ int main()
                 currentScreen = DEVELOPER_INFO;
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
+            registrationPanelA.Draw(10.0f, 228.0f, BOTTOMLEFT, 1);
+            registrationPanelB.Draw((float)(GetScreenWidth() - 621.0f), 228.0f, TOPRIGHT, 1);
             registrationBar.Draw(1);
-            viewOrPrintBar.Draw(2);
+            viewOrPrintBar.Draw(2); 
+
             if(toggleState[1]){
                 DrawTextEx(font.torus30, text.registrationText, {text.registrationTextPos.x, text.registrationTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
-                DrawTextureEx(registrationPanelA, {10.0f, 228.0f}, 0, 1, WHITE);
-                DrawTextureEx(registrationPanelB, {(float)(GetScreenWidth() - registrationPanelB.width - 10), 228.0f}, 0, 1, WHITE);
             }
             if(toggleState[2]){
                 DrawTextEx(font.torus30, text.viewOrPrintText, {text.viewOrPrintTextPos.x, text.viewOrPrintTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
