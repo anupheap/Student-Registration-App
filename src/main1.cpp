@@ -22,6 +22,7 @@ typedef enum
 // Main Program
 int main()
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     // Draw the Main Window
     InitWindow(1280, 720, "Student Registration System");
     SetTargetFPS(60);
@@ -51,10 +52,17 @@ int main()
     Image exitButtonTexture = LoadImage(exitButtonPath);
     char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
     Image mainMenuRegistrationPanelA = LoadImage(mainMenuRegistrationPanelAPath);
-    ImageResizeCanvas(&mainMenuRegistrationPanelA, mainMenuRegistrationPanelA.width/2, mainMenuRegistrationPanelA.height/2, 0, 0, BLANK);
+    ImageResize(&mainMenuRegistrationPanelA, (mainMenuRegistrationPanelA.width/2) - 70, (mainMenuRegistrationPanelA.height/2) - 70);
     Texture2D registrationPanelA = LoadTextureFromImage(mainMenuRegistrationPanelA);
     GenTextureMipmaps(&registrationPanelA);
     SetTextureFilter(registrationPanelA, TEXTURE_FILTER_TRILINEAR);
+
+    char mainMenuRegistrationPanelBPath[] = "assets\\textures\\par2.png";
+    Image mainMenuRegistrationPanelB = LoadImage(mainMenuRegistrationPanelBPath);
+    ImageResize(&mainMenuRegistrationPanelB, (mainMenuRegistrationPanelB.width/2) - 70, (mainMenuRegistrationPanelB.height/2) - 70);
+    Texture2D registrationPanelB = LoadTextureFromImage(mainMenuRegistrationPanelB);
+    GenTextureMipmaps(&registrationPanelB);
+    SetTextureFilter(registrationPanelB, TEXTURE_FILTER_TRILINEAR);
 
     // App Icon
     char logoPath[] = "assets\\textures\\student_registration_logo.png";
@@ -483,8 +491,8 @@ int main()
             
             if(toggleState[0]){
                 hoverAnyButton = false;
-                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 currentScreen = DEVELOPER_INFO;
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
             registrationBar.Draw(1);
             viewOrPrintBar.Draw(2);
@@ -493,7 +501,8 @@ int main()
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
-                DrawTextureEx(registrationPanelA, {0, 198}, 0, 1, WHITE);
+                DrawTextureEx(registrationPanelA, {10.0f, 228.0f}, 0, 1, WHITE);
+                DrawTextureEx(registrationPanelB, {(float)(GetScreenWidth() - registrationPanelB.width - 10), 228.0f}, 0, 1, WHITE);
             }
             if(toggleState[2]){
                 DrawTextEx(font.torus30, text.viewOrPrintText, {text.viewOrPrintTextPos.x, text.viewOrPrintTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
