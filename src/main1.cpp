@@ -482,8 +482,7 @@ int main()
                 DrawText(errorMessageForYear, 10, errorMessageForYearPosY, 20, RED);
             }
         }
-
-        // NEEDS WORK HERE  **NEEDS TEXTURES** 
+ 
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
@@ -533,6 +532,10 @@ int main()
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
             }
             
+        }
+
+        if (currentScreen == DEVELOPER_INFO){
+            DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);        
         }
         EndDrawing();
     }

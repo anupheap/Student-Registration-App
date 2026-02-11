@@ -53,6 +53,9 @@ class texts{
         char registrationText[32] = "Welcome to the Grouping Module,";
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
 
+        char creditsTitleText[8]= "Credits";
+        
+
     //Text Scales
         Vector2 getStudentLoginTextScale;
         Vector2 getFirstNameTextScale;
@@ -67,6 +70,7 @@ class texts{
         Vector2 getMainMenuTextScale;
         Vector2 getRegistrationTextScale;
         Vector2 getViewOrPrintTextScale;
+        Vector2 getCreditsTitleTextScale;
     //Text Position
         Vector2 studentLoginTextPos;
         Vector2 firstNameTextPos;
@@ -76,13 +80,13 @@ class texts{
         Vector2 semesterDetailsTextPos;
         Vector2 semesterTextPos;
         Vector2 yearTextPos;
-
+        
 
         //testing 
         Vector2 mainMenuTextPos;
         Vector2 registrationTextPos;
         Vector2 viewOrPrintTextPos;
-
+        Vector2 CreditsTitleTextPos;
 
     texts(textFonts &f) : font(f){
         getStudentLoginTextScale = MeasureTextEx(font.torus50, studentLoginText, titleScale, spacing);
@@ -98,7 +102,7 @@ class texts{
         getMainMenuTextScale = MeasureTextEx(font.torus30, mainMenuText, titleScale, spacing);
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
-
+        getCreditsTitleTextScale = MeasureTextEx(font.torus50,creditsTitleText,titleScale,spacing);
 
         studentLoginTextPos = {
             (GetScreenWidth()/2) - (getStudentLoginTextScale.x/2),
@@ -145,6 +149,10 @@ class texts{
         viewOrPrintTextPos = {
             (GetScreenWidth()/2) - (getViewOrPrintTextScale.x/2),
             (GetScreenHeight()/5) - (subtitleScale/2)
+        };
+        CreditsTitleTextPos = {
+            (GetScreenWidth()/2) - (getCreditsTitleTextScale.x/2),
+            (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
         };
     }
 };
