@@ -498,7 +498,7 @@ int main()
             viewOrPrintBar.Draw(2); 
             
             if(toggleState[1]){
-                DrawTextEx(font.torus30, text.registrationText, {text.registrationTextPos.x, text.registrationTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
+                DrawTextEx(font.torus30, text.registrationText, text.registrationTextPos, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
@@ -514,7 +514,7 @@ int main()
                 
             }
             if(toggleState[2]){
-                DrawTextEx(font.torus30, text.viewOrPrintText, {text.viewOrPrintTextPos.x, text.viewOrPrintTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
+                DrawTextEx(font.torus30, text.viewOrPrintText, text.viewOrPrintTextPos, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.viewOrPrintTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
