@@ -535,7 +535,9 @@ int main()
         }
 
         if (currentScreen == DEVELOPER_INFO){
-            DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);        
+            DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);      
+              
+            DrawTextEx(font.torus50, text.developerTitleText,{text.developerTitleTextPos.x, text.developerTitleTextPos.y}, text.titleScale, text.spacing, white);                                                        
         }
         EndDrawing();
     }

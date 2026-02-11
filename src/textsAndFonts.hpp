@@ -54,7 +54,14 @@ class texts{
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
 
         char creditsTitleText[8]= "Credits";
-        
+        char developerTitleText[825] = R"( ______               _                         _____       __      
+                                        |  _  \             | |                       |_   _|     / _|     
+                                        | | | |_____   _____| | ___  _ __   ___ _ __    | | _ __ | |_ ___  
+                                        | | | / _ \ \ / / _ \ |/ _ \| '_ \ / _ \ '__|   | || '_ \|  _/ _ \ 
+                                        | |/ /  __/\ V /  __/ | (_) | |_) |  __/ |     _| || | | | || (_) |
+                                        |___/ \___| \_/ \___|_|\___/| .__/ \___|_|     \___/_| |_|_| \___/ 
+                                                                    | |                                    
+                                                                    |_|                                    )";
 
     //Text Scales
         Vector2 getStudentLoginTextScale;
@@ -71,6 +78,7 @@ class texts{
         Vector2 getRegistrationTextScale;
         Vector2 getViewOrPrintTextScale;
         Vector2 getCreditsTitleTextScale;
+        Vector2 getDeveloperTitleTextScale;
     //Text Position
         Vector2 studentLoginTextPos;
         Vector2 firstNameTextPos;
@@ -87,6 +95,7 @@ class texts{
         Vector2 registrationTextPos;
         Vector2 viewOrPrintTextPos;
         Vector2 CreditsTitleTextPos;
+        Vector2 developerTitleTextPos;
 
     texts(textFonts &f) : font(f){
         getStudentLoginTextScale = MeasureTextEx(font.torus50, studentLoginText, titleScale, spacing);
@@ -103,6 +112,8 @@ class texts{
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
         getCreditsTitleTextScale = MeasureTextEx(font.torus50,creditsTitleText,titleScale,spacing);
+        getDeveloperTitleTextScale = MeasureTextEx(font.torus50,developerTitleText,titleScale,spacing);
+
 
         studentLoginTextPos = {
             (GetScreenWidth()/2) - (getStudentLoginTextScale.x/2),
@@ -153,6 +164,10 @@ class texts{
         CreditsTitleTextPos = {
             (GetScreenWidth()/2) - (getCreditsTitleTextScale.x/2),
             (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
+        };
+        developerTitleTextPos = {
+             (GetScreenWidth()/2) - (getDeveloperTitleTextScale.x/2),
+            (GetScreenHeight()/5) - (getDeveloperTitleTextScale.y/2)
         };
     }
 };
