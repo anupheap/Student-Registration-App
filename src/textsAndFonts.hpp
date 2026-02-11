@@ -8,11 +8,13 @@ class textFonts{
         const char torusPath[39] = "assets\\fonts\\TorusNotched-SemiBold.ttf";
         const char torusTitlePath[36] = "assets\\fonts\\TorusNotched-Heavy.ttf";
         const char torusInputPath[38] = "assets\\fonts\\TorusNotched-Regular.ttf";
-    
+        const char arialPath[21] = "assets\fonts\arial.ttf";
+
     public:
         Font torus50;
         Font torus30;
         Font textboxTorus30;
+        Font arial50;
         
         textFonts(){
             torus50 = LoadFontEx(torusTitlePath, 50, 0, 0);
@@ -23,10 +25,14 @@ class textFonts{
 
             textboxTorus30 = LoadFontEx(torusInputPath, 30, 0, 0);
             SetTextureFilter(textboxTorus30.texture, TEXTURE_FILTER_BILINEAR);
+
+            arial50 = LoadFontEx(arialPath, 50, 0, 0);
+            SetTextureFilter(arial50.texture, TEXTURE_FILTER_BILINEAR);
         }
         ~textFonts(){
             UnloadFont(torus50);
             UnloadFont(torus30);
+            UnloadFont(arial50);
         }
 };
 
