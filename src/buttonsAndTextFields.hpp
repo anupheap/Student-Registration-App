@@ -90,7 +90,13 @@ bool Button::Draw(Vector2 buttonPos, float baseScale, float rot, int toggleNumbe
     };
 
     bool hoveringOverButton = CheckCollisionPointRec(GetMousePosition(), collisionBox);
-    
+    Rectangle topBar = {
+        0.0f,
+        99.0f,
+        (float)GetScreenWidth(),
+        99.0f
+    };
+    bool isMouseInTopBar = GetMousePosition().y <= 99.0f;
     float deltaTime = GetFrameTime();
     float YOffsetCap = ((float)(textureStandalone.height * (baseScale + scaleIncreaseFactor))/2.0f - (float)(textureStandalone.height * baseScale)/2.0f);
     if (hoveringOverButton || toggleState[toggleNumber]) animTimer += deltaTime;
@@ -106,10 +112,11 @@ bool Button::Draw(Vector2 buttonPos, float baseScale, float rot, int toggleNumbe
         (float)textureStandalone.width,
         (float)textureStandalone.height
     };
+
     
-    if(hoveringOverButton && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    if(isMouseInTopBar && hoveringOverButton && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         if(toggleState[toggleNumber]){
-            toggleState[toggleNumber] = !toggleState[toggleNumber];
+            toggleState[toggleNumber] = false;
         }else{
             for(int i = 0; i < 3; i++){
                 toggleState[i] = (i == toggleNumber);

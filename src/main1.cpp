@@ -1,6 +1,6 @@
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+#include "raygui.h" 
 #include "student.h"
 #include "buttonsAndTextFields.hpp"
 #include "textsAndFonts.hpp"
@@ -28,68 +28,67 @@ int main()
     SetTargetFPS(60);
 
     // Initialize Textures
-    //"NEXT" Button Textures
-    char nextButtonPath[] = "assets\\textures\\next_button.png";
-    char nextButtonHoverPath[] = "assets\\textures\\next_button_hover.png";
-    char nextButtonClickedPath[] = "assets\\textures\\button_clicked.png";
-
-    //"CONFIRM" Button Textures
-    char confirmButtonPath[] = "assets\\textures\\confirm_button.png";
-    char confirmButtonHoverPath[] = "assets\\textures\\confirm_button_hover.png";
-    char confirmButtonClickedPath[] = "assets\\textures\\button_pressed.png";
-    //"Registration Button Textures"
-    char registerButtonPath[] = "assets\\textures\\registration_button.png";
-    char registerButtonHoverPath[] = "assets\\textures\\registration_button_hover.png";
-    char registerButtonClickedPath[] = "assets\\textures\\registration_button_clicked.png";
-    //View/Print Button Textures
-    char viewOrPrintButtonPath[] = "assets\\textures\\viewOrPrint_button.png";
-    char viewOrPrintButtonHoverPath[] = "assets\\textures\\viewOrPrint_button_hover.png";
-    char viewOrPrintButtonClickedPath[] = "assets\\textures\\viewOrPrint_button_clicked.png";
-    Image viewOrPrintButtonTexture = LoadImage(viewOrPrintButtonPath);
-    char exitButtonPath[] = "assets\\textures\\exit_button.png";
-    char exitButtonWhenHoverPath[] = "assets\\textures\\exit_button_hover.png";
-    char exitButtonWhenClickedPath[] = "assets\\textures\\exit_button_clicked.png";
-    Image exitButtonTexture = LoadImage(exitButtonPath);
-    char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
-    char mainMenuRegistrationPanelBPath[] = "assets\\textures\\par2.png";
+        //"NEXT" Button Textures
+        char nextButtonPath[] = "assets\\textures\\next_button.png";
+        char nextButtonHoverPath[] = "assets\\textures\\next_button_hover.png";
+        char nextButtonClickedPath[] = "assets\\textures\\button_clicked.png";
+        //"CONFIRM" Button Textures
+        char confirmButtonPath[] = "assets\\textures\\confirm_button.png";
+        char confirmButtonHoverPath[] = "assets\\textures\\confirm_button_hover.png";
+        char confirmButtonClickedPath[] = "assets\\textures\\button_pressed.png";
+        //"Registration Button Textures"
+        char registerButtonPath[] = "assets\\textures\\registration_button.png";
+        char registerButtonHoverPath[] = "assets\\textures\\registration_button_hover.png";
+        char registerButtonClickedPath[] = "assets\\textures\\registration_button_clicked.png";
+        //View/Print Button Textures
+        char viewOrPrintButtonPath[] = "assets\\textures\\viewOrPrint_button.png";
+        char viewOrPrintButtonHoverPath[] = "assets\\textures\\viewOrPrint_button_hover.png";
+        char viewOrPrintButtonClickedPath[] = "assets\\textures\\viewOrPrint_button_clicked.png";
+        Image viewOrPrintButtonTexture = LoadImage(viewOrPrintButtonPath);
+        char exitButtonPath[] = "assets\\textures\\exit_button.png";
+        char exitButtonWhenHoverPath[] = "assets\\textures\\exit_button_hover.png";
+        char exitButtonWhenClickedPath[] = "assets\\textures\\exit_button_clicked.png";
+        Image exitButtonTexture = LoadImage(exitButtonPath);
+        char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
+        char mainMenuRegistrationPanelBPath[] = "assets\\textures\\par2.png";
 
     // App Icon
-    char logoPath[] = "assets\\textures\\student_registration_logo.png";
-    Image logo = LoadImage(logoPath);
-    ImageResizeNN(&logo, 256, 256);
+        char logoPath[] = "assets\\textures\\student_registration_logo.png";
+        Image logo = LoadImage(logoPath);
+        ImageResizeNN(&logo, 256, 256);
 
     // Initialize Classes, Buttons, Text input Boxes and Game Screen
-    Student student;
-    Screen currentScreen = SCREEN_LOGIN;
-    textFonts font;
-    texts text(font);
+        Student student;
+        Screen currentScreen = SCREEN_LOGIN;
+        textFonts font;
+        texts text(font);
 
-    //"NEXT" Button
-    Button next(
-        nextButtonPath,
-        nextButtonHoverPath,
-        nextButtonClickedPath);
-    //"CONFIRM" button
-    Button confirm(
-        confirmButtonPath,
-        confirmButtonHoverPath,
-        confirmButtonClickedPath);
-    
-    Button registerButton(
-        registerButtonPath,
-        registerButtonHoverPath,
-        registerButtonClickedPath);
-    Button viewOrPrintButton(
-        viewOrPrintButtonPath,
-        viewOrPrintButtonHoverPath,
-        viewOrPrintButtonClickedPath
-    );
+        //"NEXT" Button
+        Button next(
+            nextButtonPath,
+            nextButtonHoverPath,
+            nextButtonClickedPath);
+        //"CONFIRM" button
+        Button confirm(
+            confirmButtonPath,
+            confirmButtonHoverPath,
+            confirmButtonClickedPath);
+        
+        Button registerButton(
+            registerButtonPath,
+            registerButtonHoverPath,
+            registerButtonClickedPath);
+        Button viewOrPrintButton(
+            viewOrPrintButtonPath,
+            viewOrPrintButtonHoverPath,
+            viewOrPrintButtonClickedPath
+        );
 
-    Button exitButton(
-        exitButtonPath,
-        exitButtonWhenHoverPath,
-        exitButtonWhenClickedPath
-    );
+        Button exitButton(
+            exitButtonPath,
+            exitButtonWhenHoverPath,
+            exitButtonWhenClickedPath
+        );
     
     SetWindowIcon(logo);
 
@@ -172,6 +171,16 @@ int main()
     Bars viewOrPrintBar(viewOrPrintBarColor);
     Panels registrationPanelA(mainMenuRegistrationPanelAPath);
     Panels registrationPanelB(mainMenuRegistrationPanelBPath);
+    CheckBoxesForGroupings grouping1;
+    CheckBoxesForGroupings grouping2;
+    CheckBoxesForGroupings grouping3;
+    CheckBoxesForGroupings grouping4;
+    CheckBoxesForUnits programming;
+    CheckBoxesForUnits physics;
+    CheckBoxesForUnits mathematics;
+    CheckBoxesForUnits writingNResearchSkills;
+    CheckBoxesForUnits selectAll;
+    bool toggleForGrouping1;
 
     while (!WindowShouldClose())
     {
@@ -488,12 +497,22 @@ int main()
             registrationPanelB.Draw((float)(GetScreenWidth() - 621.0f), 228.0f, TOPRIGHT, 1);
             registrationBar.Draw(1);
             viewOrPrintBar.Draw(2); 
-
+            
             if(toggleState[1]){
                 DrawTextEx(font.torus30, text.registrationText, {text.registrationTextPos.x, text.registrationTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, font);
+                grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, font);
+                grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, font);
+                grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, font);
+                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, font);
+                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, font);
+                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, font);
+                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, font);
+                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, font);
+                
             }
             if(toggleState[2]){
                 DrawTextEx(font.torus30, text.viewOrPrintText, {text.viewOrPrintTextPos.x, text.viewOrPrintTextPos.y}, text.subtitleScale, text.spacing, backgroundColor);
@@ -510,7 +529,7 @@ int main()
             } else {
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton && GetMousePosition().y <= 99.0f) {
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
             }
             

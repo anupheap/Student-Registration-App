@@ -7,6 +7,8 @@
 #include "variables.hpp"
 #include "reasings.h"
 #include "buttonsAndTextFields.hpp"
+bool toggleStateForGroupings[4];
+bool toggleStateForUnits[5];
 
 class Bars{
     private:
@@ -35,6 +37,67 @@ class Panels{
         ~Panels();
         void Draw(float xpos, float ypos, originDirection selectedDirection, int toggleNumber);
 
+};
+
+class CheckBoxesForGroupings{
+
+    public:
+        CheckBoxesForGroupings() = default;
+        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, textFonts &font){
+            Rectangle collisionBoxForCheckBoxes = {
+                xpos,
+                ypos,
+                45 + MeasureTextEx(font.torus30, text, 30, 3).x,
+                30
+            };
+            Color colorState;
+            Color mmYesGREEEEEEN = {172, 247, 98, 255};
+            bool isHovering = CheckCollisionPointRec(GetMousePosition(), collisionBoxForCheckBoxes);
+            bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
+            if(clicked){
+                toggleStateForGroupings[toggleLabel] = !toggleStateForGroupings[toggleLabel];
+            } else if (isHovering){
+                colorState = mmYesGREEEEEEN;
+            } else{
+                colorState = WHITE;
+            }
+            DrawRectangleLines(xpos, ypos, 30, 30, colorState);
+            DrawTextEx(font.torus30, text, {xpos + 40, ypos}, 30, 3, colorState);
+            if(toggleStateForGroupings[toggleLabel]){
+                DrawRectangle(xpos+5, ypos+5, 20, 20, colorState);
+            } 
+            return toggleStateForGroupings[toggleLabel];
+        }
+};
+class CheckBoxesForUnits{
+
+    public:
+        CheckBoxesForUnits() = default;
+        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, textFonts &font){
+            Rectangle collisionBoxForCheckBoxes = {
+                xpos,
+                ypos,
+                45 + MeasureTextEx(font.torus30, text, 30, 3).x,
+                30
+            };
+            Color colorState;
+            Color mmYesGREEEEEEN = {172, 247, 98, 255};
+            bool isHovering = CheckCollisionPointRec(GetMousePosition(), collisionBoxForCheckBoxes);
+            bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
+            if(clicked){
+                toggleStateForUnits[toggleLabel] = !toggleStateForUnits[toggleLabel];
+            } else if (isHovering){
+                colorState = mmYesGREEEEEEN;
+            } else{
+                colorState = WHITE;
+            }
+            DrawRectangleLines(xpos, ypos, 30, 30, colorState);
+            DrawTextEx(font.torus30, text, {xpos + 40, ypos}, 30, 3, colorState);
+            if(toggleStateForUnits[toggleLabel]){
+                DrawRectangle(xpos+5, ypos+5, 20, 20, colorState);
+            } 
+            return toggleStateForUnits[toggleLabel];
+        }
 };
 
 inline Bars::Bars(Color color){
@@ -92,8 +155,8 @@ inline void Panels::Draw(float xpos, float ypos, originDirection selectedDirecti
     float offsetX = EaseExpoOut(animPanels.animTimer, 0, deltaX, animPanels.animDuration);
     float offsetY = EaseExpoOut(animPanels.animTimer, 0, deltaY, animPanels.animDuration);
 
-    Vector2 drawPos = { originPos.x + offsetX, originPos.y + offsetY };
+    Vector2 currentPos = { originPos.x + offsetX, originPos.y + offsetY };
 
-    DrawTextureEx(registrationPanel, drawPos, 0, 1, WHITE);
+    DrawTextureEx(registrationPanel, currentPos, 0, 1, WHITE);
 }
 #endif
