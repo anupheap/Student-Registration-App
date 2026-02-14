@@ -7,8 +7,7 @@
 #include "variables.hpp"
 #include "reasings.h"
 #include "buttonsAndTextFields.hpp"
-bool toggleStateForGroupings[4];
-bool toggleStateForUnits[5];
+
 
 class Bars{
     private:
@@ -43,7 +42,7 @@ class CheckBoxesForGroupings{
 
     public:
         CheckBoxesForGroupings() = default;
-        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, textFonts &font){
+        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, bool* toggleStateRadio, textFonts &font){
             Rectangle collisionBoxForCheckBoxes = {
                 xpos,
                 ypos,
@@ -55,25 +54,31 @@ class CheckBoxesForGroupings{
             bool isHovering = CheckCollisionPointRec(GetMousePosition(), collisionBoxForCheckBoxes);
             bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
             if(clicked){
-                toggleStateForGroupings[toggleLabel] = !toggleStateForGroupings[toggleLabel];
-            } else if (isHovering){
+                if (toggleStateRadio[toggleLabel]){
+                    toggleStateRadio[toggleLabel] = !toggleStateRadio[toggleLabel];
+                }else{
+                    for (int i = 0; i < 4; i++){
+                        toggleStateRadio[i] = (i == toggleLabel);
+                    }
+                }
+            } else if (isHovering || toggleStateRadio[toggleLabel]){
                 colorState = mmYesGREEEEEEN;
             } else{
                 colorState = WHITE;
             }
             DrawRectangleLines(xpos, ypos, 30, 30, colorState);
             DrawTextEx(font.torus30, text, {xpos + 40, ypos}, 30, 3, colorState);
-            if(toggleStateForGroupings[toggleLabel]){
+            if(toggleStateRadio[toggleLabel]){
                 DrawRectangle(xpos+5, ypos+5, 20, 20, colorState);
             } 
-            return toggleStateForGroupings[toggleLabel];
+            return toggleStateRadio[toggleLabel];
         }
 };
 class CheckBoxesForUnits{
 
     public:
         CheckBoxesForUnits() = default;
-        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, textFonts &font){
+        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, bool* toggleStateRadio, textFonts &font){
             Rectangle collisionBoxForCheckBoxes = {
                 xpos,
                 ypos,
@@ -85,18 +90,21 @@ class CheckBoxesForUnits{
             bool isHovering = CheckCollisionPointRec(GetMousePosition(), collisionBoxForCheckBoxes);
             bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
             if(clicked){
-                toggleStateForUnits[toggleLabel] = !toggleStateForUnits[toggleLabel];
-            } else if (isHovering){
+                toggleStateRadio[toggleLabel] = !toggleStateRadio[toggleLabel];
+                if(toggleStateRadio[4]){
+                    for (int i = 0; i < 5; i++) toggleStateRadio[i] = (i == toggleLabel);
+                }
+            } else if (isHovering || toggleStateRadio[toggleLabel]){
                 colorState = mmYesGREEEEEEN;
             } else{
                 colorState = WHITE;
             }
             DrawRectangleLines(xpos, ypos, 30, 30, colorState);
             DrawTextEx(font.torus30, text, {xpos + 40, ypos}, 30, 3, colorState);
-            if(toggleStateForUnits[toggleLabel]){
+            if(toggleStateRadio[toggleLabel]){
                 DrawRectangle(xpos+5, ypos+5, 20, 20, colorState);
             } 
-            return toggleStateForUnits[toggleLabel];
+            return toggleStateRadio[toggleLabel];
         }
 };
 

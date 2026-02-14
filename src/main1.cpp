@@ -165,6 +165,7 @@ int main()
     Color viewOrPrintBarColor = {102, 204, 255, 255};
     Color registrationBarColor = {172, 247, 98, 255};
     int semesterSelection = 0;
+    int yearSelection = 0;
     float animTimer = 0.0f;
     float animEnd = 0.25f;
     Bars registrationBar(registrationBarColor);
@@ -181,6 +182,10 @@ int main()
     CheckBoxesForUnits writingNResearchSkills;
     CheckBoxesForUnits selectAll;
     bool toggleForGrouping1;
+
+    bool toggleStateForGroupings[4] = {false, false, false, false};
+    bool toggleStateForUnits[5] = {false, false, false, false, false};
+
 
     while (!WindowShouldClose())
     {
@@ -209,6 +214,7 @@ int main()
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_FOCUSED, ColorToInt(focusedTextColor));
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_NORMAL, ColorToInt(baseTextColor));
         bool hoverAnyButton = false;
+        bool anyGroupingSelected =false;
         //====LOGIN-SCREEN====
         if (currentScreen == SCREEN_LOGIN)
         {
@@ -441,45 +447,20 @@ int main()
             DrawTextEx(font.torus30, text.semesterText, text.semesterTextPos, text.subtitleScale, text.spacing, white);
             //DrawTextEx(font.torus30, student.getName(), {(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, text.subtitleScale, text.spacing, white);
             DrawRectangleRec(yearInputBox, baseColor);
-            if (GuiDropdownBox(semesterInputBox, "1;2;3", &semesterSelection, semesterToggle)) semesterToggle = !semesterToggle;
-            DrawTextEx(font.torus30, text.yearText, text.yearTextPos, text.subtitleScale, text.spacing, white);
-            if (GuiTextBox(yearInputBox, yearBuffer, 5, yearToggle)) yearToggle = !yearToggle;
             if(confirm.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 130}, 0.3f, 0)) hoverAnyButton = true;
             if (hoverAnyButton){
                 SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
             } else {
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
+            if (GuiDropdownBox(semesterInputBox, "1;2;3", &semesterSelection, semesterToggle)) semesterToggle = !semesterToggle;
+            DrawTextEx(font.torus30, text.yearText, text.yearTextPos, text.subtitleScale, text.spacing, white);
+            if (GuiDropdownBox(yearInputBox, "2020;2021;2022;2023;2024;2025;2026", &yearSelection, yearToggle)) yearToggle = !yearToggle;
+            
             if (confirm.isPressed())
             {
-                switch(yearInputValidation(yearBuffer)){
-                    case (IS_EMPTY):{
-                        yearValidity = false;
-                        strcpy(errorMessageForYear, "[ERROR]\tYear is Empty!");
-                        break;
-                    }
-                    case (HAS_WHITESPACE):{
-                        yearValidity = false;
-                        strcpy(errorMessageForYear, "[ERROR]\tRemove the Whitespace(s)!");
-                        break;
-                    }
-                    case (HAS_ALPHA_AND_OR_SYMBOLS):{
-                        yearValidity = false;
-                        strcpy(errorMessageForYear, "[ERROR]\tYear should only have Integers!");
-                        break;
-                    }
-                    default:{
-                        yearValidity = true;
-                        strcpy(errorMessageForYear, "\0");
-                    }
-                }
-            }
-            if(yearValidity){
-                student.setSemester(semesterSelection + 1, yearBuffer);
+                student.setSemester(semesterSelection + 1, yearSelection);
                 currentScreen = MAIN_MENU;
-            }else{
-                DrawText(errorMessageForSemester, 10, errorMessageForSemesterPosY, 20, RED);
-                DrawText(errorMessageForYear, 10, errorMessageForYearPosY, 20, RED);
             }
         }
  
@@ -502,15 +483,15 @@ int main()
                 Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
-                grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, font);
-                grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, font);
-                grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, font);
-                grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, font);
-                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, font);
-                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, font);
-                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, font);
-                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, font);
-                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, font);
+                grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, toggleStateForGroupings, font);
+                grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, toggleStateForGroupings, font);
+                grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, toggleStateForGroupings, font);
+                grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, toggleStateForGroupings, font);
+                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, toggleStateForUnits, font);
+                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, toggleStateForUnits, font);
+                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, toggleStateForUnits, font);
+                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, toggleStateForUnits, font);
+                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, toggleStateForUnits, font);
                 
             }
             if(toggleState[2]){
@@ -531,7 +512,6 @@ int main()
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton && GetMousePosition().y <= 99.0f) {
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
             }
-            
         }
 
         if (currentScreen == DEVELOPER_INFO){

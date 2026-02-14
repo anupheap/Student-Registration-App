@@ -8,6 +8,7 @@
         float animDuration;
     };
 
+
     typedef enum{
         TOPLEFT,
         TOPRIGHT,

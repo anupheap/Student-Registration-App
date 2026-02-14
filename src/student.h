@@ -47,7 +47,7 @@ public:
         return name;
     }
     void setID(char ID[128]) { strcpy(id, ID); }
-    void setSemester(int s, char y[5]) { semester = s; year = y; }
+    void setSemester(int s, int y) { semester = s; year = y; }
 
     // Getters
     char* getName() { return name; }
