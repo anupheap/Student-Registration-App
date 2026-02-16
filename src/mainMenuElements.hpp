@@ -7,6 +7,7 @@
 #include "variables.hpp"
 #include "reasings.h"
 #include "buttonsAndTextFields.hpp"
+#include "nlohmann/json.hpp"
 
 
 class Bars{

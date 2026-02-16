@@ -16,19 +16,9 @@ using namespace nlohmann;
 using namespace std;
 using vs = ValiditySafeguards;
 
-
-// Screens
-
-
 // Main Program
 int main(){
-    json data;
-    data = {
-        {"name", "Undefined"},
-        {"id", "Undefined"},
-        {"semester", NULL},
-        {"year", NULL}
-    };
+    extern json data;
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     // Draw the Main Window
@@ -59,6 +49,9 @@ int main(){
         Image exitButtonTexture = LoadImage(exitButtonPath);
         char mainMenuRegistrationPanelAPath[] = "assets\\textures\\parallelogram_maybe.png";
         char mainMenuRegistrationPanelBPath[] = "assets\\textures\\par2.png";
+        char submitButtonButtonPath[] = "assets\\textures\\submitButton.png";
+        char submitButtonWhenHoverPath[] = "assets\\textures\\submitButtonHover.png";
+        char submitButtonWhenClickedPath[] = "assets\\textures\\submitButtonClicked.png";
 
     // App Icon
         char logoPath[] = "assets\\textures\\student_registration_logo.png";
@@ -96,6 +89,11 @@ int main(){
             exitButtonPath,
             exitButtonWhenHoverPath,
             exitButtonWhenClickedPath
+        );
+        Button submitButton(
+            submitButtonButtonPath,
+            submitButtonWhenHoverPath,
+            submitButtonWhenClickedPath
         );
     
     SetWindowIcon(logo);
@@ -184,10 +182,6 @@ int main(){
     CheckBoxesForUnits mathematics;
     CheckBoxesForUnits writingNResearchSkills;
     CheckBoxesForUnits selectAll;
-    bool toggleForGrouping1;
-
-    bool toggleStateForGroupings[4] = {false, false, false, false};
-    bool toggleStateForUnits[5] = {false, false, false, false, false};
 
 
     while (!WindowShouldClose())
@@ -470,7 +464,7 @@ int main(){
             DrawTextEx(font.torus30, text.yearText, text.yearTextPos, text.subtitleScale, text.spacing, white);
             if (GuiDropdownBox(yearInputBox, "2020;2021;2022;2023;2024;2025;2026", &yearSelection, yearToggle)) yearToggle = !yearToggle;
             
-            if (confirm.isPressed())
+            if (confirm.isPressed() && !yearToggle)
             {
                 student.setSemesterAndYear(semesterSelection + 1, yearSelection);
                 currentScreen = MAIN_MENU;
@@ -496,15 +490,107 @@ int main(){
                 Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
-                grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, toggleStateForGroupings, font);
-                grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, toggleStateForGroupings, font);
-                grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, toggleStateForGroupings, font);
-                grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, toggleStateForGroupings, font);
-                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, toggleStateForUnits, font);
-                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, toggleStateForUnits, font);
-                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, toggleStateForUnits, font);
-                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, toggleStateForUnits, font);
-                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, toggleStateForUnits, font);
+                grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, registrationToggles.toggleStateForGroupings, font);
+                grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, registrationToggles.toggleStateForGroupings, font);
+                grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, registrationToggles.toggleStateForGroupings, font);
+                grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, registrationToggles.toggleStateForGroupings, font);
+                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, registrationToggles.toggleStateForUnits, font);
+                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, registrationToggles.toggleStateForUnits, font);
+                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, registrationToggles.toggleStateForUnits, font);
+                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, registrationToggles.toggleStateForUnits, font);
+                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, registrationToggles.toggleStateForUnits, font);
+                submitButton.Draw({GetScreenWidth()/2.0f, 660.0f}, 0.35f, 0);
+                if(submitButton.isPressed()){
+                    data["name"] = info.studentName;
+                    data["id"] = info.studentID;
+                    data["semester"] = info.studentSemester;
+                    data["year"] = info.studentYear;
+                    if(registrationToggles.toggleStateForGroupings[0]){
+                        if(registrationToggles.toggleStateForUnits[0]){
+                            data["Registrations for 1E1"].push_back("Programming");
+                        }
+                        if (registrationToggles.toggleStateForUnits[1]){
+                            data["Registrations for 1E1"].push_back("Physics I");
+                        }
+                        if (registrationToggles.toggleStateForUnits[2]){
+                            data["Registrations for 1E1"].push_back("Mathematics");
+                        }
+                        if (registrationToggles.toggleStateForUnits[3]){
+                            data["Registrations for 1E1"].push_back("Writing And Researching Skills");
+                        }
+                        if (registrationToggles.toggleStateForUnits[4]){
+                            data["Registrations for 1E1"].push_back("Programming");
+                            data["Registrations for 1E1"].push_back("Physics I");
+                            data["Registrations for 1E1"].push_back("Mathematics");
+                            data["Registrations for 1E1"].push_back("Writing And Researching Skills");
+                        }
+                    }
+                    if(registrationToggles.toggleStateForGroupings[1]){
+                        if(registrationToggles.toggleStateForUnits[0]){
+                            data["Registrations for 1E2"].push_back("Programming");
+                        }
+                        if (registrationToggles.toggleStateForUnits[1]){
+                            data["Registrations for 1E2"].push_back("Physics I");
+                        }
+                        if (registrationToggles.toggleStateForUnits[2]){
+                            data["Registrations for 1E2"].push_back("Mathematics");
+                        }
+                        if (registrationToggles.toggleStateForUnits[3]){
+                            data["Registrations for 1E2"].push_back("Writing And Researching Skills");
+                        }
+                        if (registrationToggles.toggleStateForUnits[4]){
+                            data["Registrations for 1E2"].push_back("Programming");
+                            data["Registrations for 1E2"].push_back("Physics I");
+                            data["Registrations for 1E2"].push_back("Mathematics");
+                            data["Registrations for 1E2"].push_back("Writing And Researching Skills");
+                        }
+                    }
+                    if(registrationToggles.toggleStateForGroupings[2]){
+                        if(registrationToggles.toggleStateForUnits[0]){
+                            data["Registrations for 1E3"].push_back("Programming");
+                        }
+                        if (registrationToggles.toggleStateForUnits[1]){
+                            data["Registrations for 1E3"].push_back("Physics I");
+                        }
+                        if (registrationToggles.toggleStateForUnits[2]){
+                            data["Registrations for 1E3"].push_back("Mathematics");
+                        }
+                        if (registrationToggles.toggleStateForUnits[3]){
+                            data["Registrations for 1E3"].push_back("Writing And Researching Skills");
+                        }
+                        if (registrationToggles.toggleStateForUnits[4]){
+                            data["Registrations for 1E3"].push_back("Programming");
+                            data["Registrations for 1E3"].push_back("Physics I");
+                            data["Registrations for 1E3"].push_back("Mathematics");
+                            data["Registrations for 1E3"].push_back("Writing And Researching Skills");
+                        }
+                    }
+                    if(registrationToggles.toggleStateForGroupings[3]){
+                        if(registrationToggles.toggleStateForUnits[0]){
+                            data["Registrations for 1E4"].push_back("Programming");
+                        }
+                        if (registrationToggles.toggleStateForUnits[1]){
+                            data["Registrations for 1E4"].push_back("Physics I");
+                        }
+                        if (registrationToggles.toggleStateForUnits[2]){
+                            data["Registrations for 1E4"].push_back("Mathematics");
+                        }
+                        if (registrationToggles.toggleStateForUnits[3]){
+                            data["Registrations for 1E4"].push_back("Writing And Researching Skills");
+                        }
+                        if (registrationToggles.toggleStateForUnits[4]){
+                            data["Registrations for 1E4"].push_back("Programming");
+                            data["Registrations for 1E4"].push_back("Physics I");
+                            data["Registrations for 1E4"].push_back("Mathematics");
+                            data["Registrations for 1E4"].push_back("Writing And Researching Skills");
+                        }
+                    }
+                    ofstream outDocs(info.studentFileName);
+                    if(outDocs.is_open()){
+                        outDocs << data.dump(8);
+                        outDocs.close();
+                    }
+                }
                 
             }
             if(toggleState[2]){
@@ -533,16 +619,6 @@ int main(){
             DrawTextEx(font.arial50, text.developerTitleText,{text.developerTitleTextPos.x, text.developerTitleTextPos.y}, text.titleScale, text.spacing, white);                                                        
         }
         EndDrawing();
-    }
-    
-    data["name"] = info.studentName;
-    data["id"] = info.studentID;
-    data["semester"] = info.studentSemester;
-    data["year"] = info.studentYear;
-    ofstream outDocs(info.studentFileName);
-    if(outDocs.is_open()){
-        outDocs << data.dump(4);
-        outDocs.close();
     }
     return 0;
 }

@@ -40,6 +40,7 @@ public:
     ~Button();
     bool Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber);
     bool Draw(Vector2 buttonPos, float scale, float rot);
+    bool Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber, bool toggleAppearance);
     bool isPressed();
 };
 
@@ -167,6 +168,7 @@ bool Button::Draw(Vector2 buttonPos, float scale, float rot)
     DrawTexturePro(currentButtonTexture, sourceRect, destinationRect, origin, 0, WHITE);
     return hoveringOverButton;
 }
+
 
 bool Button::isPressed()
 {
