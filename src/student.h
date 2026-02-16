@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "variables.hpp"
 
 using namespace std;
 
@@ -13,47 +14,46 @@ struct Registration {
     int unitIndex;
 };
 
-// Global Constants (Moved here so Main.cpp can see them)
-const string UNIT_NAMES[4] = {
-    "Programming", "Physics 1", "Mathematics 2", "Writing Skills"
-};
-const string GROUP_NAMES[4] = { "1E1", "1E2", "1E3", "1E4" };
-
-// --- Class Definition ---
 class Student {
-private:
-    char name[200];
-    char id[128];
-    string semester;
-    string year;
-    vector<Registration> registrations;
-
-public:
-    // Setters
-    char* setName(char firstName[200], char lastName[200]){
-        strcpy(name, firstName);
-        strcat(name, " ");
-        strcat(name, lastName);
-        strcat(name, "!");
-        return name;
-    }
-    char* setName(char firstName[200], char middleName[200], char lastName[200]){
-        strcpy(name, firstName);
-        strcat(name, " ");
-        strcat(name, middleName);
-        strcat(name, " ");
-        strcat(name, lastName);
-        strcat(name, "!");
-        return name;
-    }
-    void setID(char ID[128]) { strcpy(id, ID); }
-    void setSemester(int s, int y) { semester = s; year = y; }
-
-    // Getters
-    char* getName() { return name; }
-    char* getID() { return id; }
-    string getSemester() { return semester; }
-    string getYear() { return year; }
+    private:
+        vector<Registration> registrations;
+    public:
+        void setName(char* firstName, char* lastName){
+            strcpy(info.studentName, firstName);    
+            strcat(info.studentName, " ");
+            strcat(info.studentName, lastName);
+        }
+        void setName(char* firstName, char* middleName, char* lastName){
+            strcpy(info.studentName, firstName);
+            strcat(info.studentName, " ");
+            strcat(info.studentName, middleName);
+            strcat(info.studentName, " ");
+            strcat(info.studentName, lastName);
+        }
+        void setDisplayName(){
+            strcpy(info.displayName, info.studentName);
+            strcat(info.displayName, "!");
+        }
+        void setID(char* ID){
+            strcpy(info.studentID, ID);
+        }
+        void setSemesterAndYear(int s, int y){ 
+            info.studentSemester = s;
+            info.studentYear = 2020 + y;
+        }
+        void setFileName(char* firstName, char* lastName){
+            strcpy(info.studentFileName, "records/student");
+            strcat(info.studentFileName, firstName);
+            strcat(info.studentFileName, lastName);
+            strcat(info.studentFileName, ".json");
+        }
+        void setFileName(char* firstName, char* middleName,char* lastName){
+            strcpy(info.studentFileName, "records/student");
+            strcat(info.studentFileName, firstName);
+            strcat(info.studentFileName, middleName);
+            strcat(info.studentFileName, lastName);
+            strcat(info.studentFileName, ".json");
+        }
     
     // Logic
     void addRegistration(string unit, string group, int uIndex) {

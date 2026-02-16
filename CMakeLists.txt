@@ -28,6 +28,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_SOURCE_DIR}/assets"
     "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/src/records"
+    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/records"
     
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/raylib.dll"

@@ -8,20 +8,28 @@
 #include "reasings.h"
 #include "variables.hpp"
 #include "mainMenuElements.hpp"
+#include "nlohmann/json.hpp"
+#include <iostream>
+#include <fstream>
+
+using namespace nlohmann;
+using namespace std;
+using vs = ValiditySafeguards;
+
 
 // Screens
-typedef enum
-{
-    SCREEN_LOGIN,
-    SEMESTER_SCREEN,
-    MAIN_MENU,
-    REGISTRATION_SCREEN,
-    DEVELOPER_INFO
-} Screen;
+
 
 // Main Program
-int main()
-{
+int main(){
+    json data;
+    data = {
+        {"name", "Undefined"},
+        {"id", "Undefined"},
+        {"semester", NULL},
+        {"year", NULL}
+    };
+
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     // Draw the Main Window
     InitWindow(1280, 720, "Student Registration System");
@@ -123,11 +131,6 @@ int main()
         text.yearTextPos.y,
         370,
         30};
-    char imgPath[] = "output\\assets\\images\\sample.png";
-    Image sample = LoadImage(imgPath);
-    ImageResizeNN(&sample, 1280, 720);
-    Texture2D back = LoadTextureFromImage(sample);
-    UnloadImage(sample);
 
     // Initialize TextBox Buffers
     char errorMessageForFirstName[200] = "\0";
@@ -214,7 +217,7 @@ int main()
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_FOCUSED, ColorToInt(focusedTextColor));
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_NORMAL, ColorToInt(baseTextColor));
         bool hoverAnyButton = false;
-        bool anyGroupingSelected =false;
+        bool anyGroupingSelected = false;
         //====LOGIN-SCREEN====
         if (currentScreen == SCREEN_LOGIN)
         {
@@ -263,177 +266,187 @@ int main()
 
             if (next.isPressed())
             {
-                switch (nameInputValidation(firstNameBuffer))
-                {
-                case (IS_EMPTY):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name is Empty!");
-                    firstNameValidity = false;
-                    break;
+                switch(nameInputValidation(firstNameBuffer)){
+                    case(vs::IS_EMPTY):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name is Empty!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_PRECEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your First name!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_PROCEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your First Name!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_WHITESPACE):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the additional whitespace(s) from your First Name!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_NUMBERS):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has a Number(s)!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_SYMBOLS):
+                    {
+                        strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has an Invalid Character(s)!");
+                        firstNameValidity = false;
+                        break;
+                    }
+                    default:
+                    {
+                        firstNameValidity = true;
+                        strcpy(errorMessageForFirstName, "\0");
+                    }
                 }
-                case (HAS_PRECEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your First name!");
-                    firstNameValidity = false;
-                    break;
-                }
-                case (HAS_PROCEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your First Name!");
-                    firstNameValidity = false;
-                    break;
-                }
-                case (HAS_WHITESPACE):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the additional whitespace(s) from your First Name!");
-                    firstNameValidity = false;
-                    break;
-                }
-                case (HAS_NUMBERS):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has a Number(s)!");
-                    firstNameValidity = false;
-                    break;
-                }
-                case (HAS_SYMBOLS):
-                {
-                    strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has an Invalid Character(s)!");
-                    firstNameValidity = false;
-                    break;
-                }
-                default:
-                {
-                    firstNameValidity = true;
-                    strcpy(errorMessageForFirstName, "\0");
-                }
-                }
-                switch (nameInputValidation(middleNameBuffer))
-                {
-                case (HAS_PRECEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForMiddleName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Middle Name!");
-                    middleNameValidity = false;
-                    break;
-                }
-                case (HAS_PROCEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the Proceding whitespace(s) from your Middle Name!");
-                    middleNameValidity = false;
-                    break;
-                }
-                case (HAS_WHITESPACE):
-                {
-                    strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the additional whitespace(s)!");
-                    middleNameValidity = false;
-                    break;
-                }
-                case (HAS_NUMBERS):
-                {
-                    strcpy(errorMessageForMiddleName, "[ERROR]\tText has numbers!");
-                    middleNameValidity = false;
-                    break;
-                }
-                case (HAS_SYMBOLS):
-                {
-                    strcpy(errorMessageForMiddleName, "[ERROR]\tInvalid Character(s)!");
-                    middleNameValidity = false;
-                    break;
-                }
-                default:
-                {
-                    middleNameValidity = true;
-                    strcpy(errorMessageForMiddleName, "\0");
-                }
-                }
-                switch (nameInputValidation(lastNameBuffer))
-                {
-                case (IS_EMPTY):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name is Empty!");
-                    lastNameValidity = false;
-                    break;
-                }
-                case (HAS_PRECEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Last name!");
-                    lastNameValidity = false;
-                    break;
-                }
-                case (HAS_PROCEDING_WHITESPACE):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your Last Name!");
-                    lastNameValidity = false;
-                    break;
-                }
-                case (HAS_WHITESPACE):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the additional whitespace(s) from your Last Name!");
-                    lastNameValidity = false;
-                    break;
-                }
-                case (HAS_NUMBERS):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has a Number(s)!");
-                    lastNameValidity = false;
-                    break;
-                }
-                case (HAS_SYMBOLS):
-                {
-                    strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has an Invalid Character(s)!");
-                    lastNameValidity = false;
-                    break;
-                }
-                default:
-                {
-                    lastNameValidity = true;
-                    strcpy(errorMessageForLastName, "\0");
-                }
-                }
-                switch (IDInputValidation(IDBuffer))
-                {
-                case INVALID_ID_FORMAT:
-                    strcpy(errorMessageForID, "[ERROR]\tYour ID should be in 7000XXXXX format!");
-                    IDValidity = false;
-                    break;
-                case IS_EMPTY:
-                    strcpy(errorMessageForID, "[ERROR]\tYour ID is Empty!");
-                    IDValidity = false;
-                    break;
-                case INSUFFICIENT_CHARACTERS:
-                    strcpy(errorMessageForID, "[ERROR]\tYour ID is not exactly 9 digits!");
-                    IDValidity = false;
-                    break;
-                case HAS_WHITESPACE:
-                    strcpy(errorMessageForID, "[ERROR]\tYour ID should not have a Whitespace(s)!");
-                    IDValidity = false;
-                    break;
-                case HAS_ALPHA_AND_OR_SYMBOLS:
-                    strcpy(errorMessageForID, "[ERROR]\tYour ID should only contain Digits!");
-                    IDValidity = false;
-                    break;
-                default:
-                    IDValidity = true;
-                    strcpy(errorMessageForID, "\0");
-                }
-            }
 
-            if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
-            {
-                if(strlen(middleNameBuffer) == 0){
-                    strcpy(name, student.setName(firstNameBuffer, lastNameBuffer));
-                } else{
-                    strcpy(name, student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer));
+                switch(nameInputValidation(middleNameBuffer)){
+                    case(vs::HAS_PRECEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForMiddleName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Middle Name!");
+                        middleNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_PROCEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the Proceding whitespace(s) from your Middle Name!");
+                        middleNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_WHITESPACE):
+                    {
+                        strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the additional whitespace(s)!");
+                        middleNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_NUMBERS):
+                    {
+                        strcpy(errorMessageForMiddleName, "[ERROR]\tText has numbers!");
+                        middleNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_SYMBOLS):
+                    {
+                        strcpy(errorMessageForMiddleName, "[ERROR]\tInvalid Character(s)!");
+                        middleNameValidity = false;
+                        break;
+                    }
+                    default:
+                    {
+                        middleNameValidity = true;
+                        strcpy(errorMessageForMiddleName, "\0");
+                    }
                 }
-                student.setID(IDBuffer);
-                currentScreen = SEMESTER_SCREEN;
+
+                switch(nameInputValidation(lastNameBuffer)){
+                    case(vs::IS_EMPTY):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name is Empty!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_PRECEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Last name!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_PROCEDING_WHITESPACE):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your Last Name!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_WHITESPACE):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the additional whitespace(s) from your Last Name!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_NUMBERS):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has a Number(s)!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_SYMBOLS):
+                    {
+                        strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has an Invalid Character(s)!");
+                        lastNameValidity = false;
+                        break;
+                    }
+                    default:
+                    {
+                        lastNameValidity = true;
+                        strcpy(errorMessageForLastName, "\0");
+                    }
+                }
+
+                switch(IDInputValidation(IDBuffer)){
+                    case(vs::INVALID_ID_FORMAT):
+                    {
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should be in 7000XXXXX format!");
+                        IDValidity = false;
+                        break;
+                    }
+                    case(vs::IS_EMPTY):
+                    {
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID is Empty!");
+                        IDValidity = false;
+                        break;
+                    }
+                    case(vs::INSUFFICIENT_CHARACTERS):
+                    {
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID is not exactly 9 digits!");
+                        IDValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_WHITESPACE):
+                    {
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should not have a Whitespace(s)!");
+                        IDValidity = false;
+                        break;
+                    }
+                    case(vs::HAS_ALPHA_AND_OR_SYMBOLS):
+                    {
+                        strcpy(errorMessageForID, "[ERROR]\tYour ID should only contain Digits!");
+                        IDValidity = false;
+                        break;
+                    }
+                    default:
+                    {
+                        IDValidity = true;
+                        strcpy(errorMessageForID, "\0");
+                    }
+                }
+                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
+                { 
+                    if(strlen(middleNameBuffer) == 0){
+                        student.setName(firstNameBuffer, lastNameBuffer);
+                        student.setFileName(firstNameBuffer, lastNameBuffer);
+                    } else{
+                        student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
+                        student.setFileName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
+                    }
+                    student.setID(IDBuffer);
+                    student.setDisplayName();
+                    currentScreen = SEMESTER_SCREEN;
+                }
             }
-            else
-            {
-                DrawText(errorMessageForFirstName, 10, errorMessageForFirstNamePosY, 20, RED);
-                DrawText(errorMessageForMiddleName, 10, errorMessageForMiddleNamePosY, 20, RED);
-                DrawText(errorMessageForLastName, 10, errorMessageForLastNamePosY, 20, RED);
-                DrawText(errorMessageForID, 10, errorMessageForIDPosY, 20, RED);
-            }
+            DrawText(errorMessageForFirstName, 10, errorMessageForFirstNamePosY, 20, RED);
+            DrawText(errorMessageForMiddleName, 10, errorMessageForMiddleNamePosY, 20, RED);
+            DrawText(errorMessageForLastName, 10, errorMessageForLastNamePosY, 20, RED);
+            DrawText(errorMessageForID, 10, errorMessageForIDPosY, 20, RED);
         }
         if (currentScreen == SEMESTER_SCREEN)
         {
@@ -459,7 +472,7 @@ int main()
             
             if (confirm.isPressed())
             {
-                student.setSemester(semesterSelection + 1, yearSelection);
+                student.setSemesterAndYear(semesterSelection + 1, yearSelection);
                 currentScreen = MAIN_MENU;
             }
         }
@@ -480,9 +493,9 @@ int main()
             
             if(toggleState[1]){
                 DrawTextEx(font.torus30, text.registrationText, text.registrationTextPos, text.subtitleScale, text.spacing, backgroundColor);
-                Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
+                Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
-                DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
                 grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, toggleStateForGroupings, font);
                 grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, toggleStateForGroupings, font);
                 grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, toggleStateForGroupings, font);
@@ -496,9 +509,9 @@ int main()
             }
             if(toggleState[2]){
                 DrawTextEx(font.torus30, text.viewOrPrintText, text.viewOrPrintTextPos, text.subtitleScale, text.spacing, backgroundColor);
-                Vector2 getNameScale = MeasureTextEx(font.torus30, name, text.subtitleScale, text.spacing);
+                Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.viewOrPrintTextPos.y + 30)};
-                DrawTextEx(font.torus30, name, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
             }
             DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
             if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
@@ -520,6 +533,16 @@ int main()
             DrawTextEx(font.arial50, text.developerTitleText,{text.developerTitleTextPos.x, text.developerTitleTextPos.y}, text.titleScale, text.spacing, white);                                                        
         }
         EndDrawing();
+    }
+    
+    data["name"] = info.studentName;
+    data["id"] = info.studentID;
+    data["semester"] = info.studentSemester;
+    data["year"] = info.studentYear;
+    ofstream outDocs(info.studentFileName);
+    if(outDocs.is_open()){
+        outDocs << data.dump(4);
+        outDocs.close();
     }
     return 0;
 }
