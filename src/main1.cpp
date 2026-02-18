@@ -537,7 +537,7 @@ int main()
         if (currentScreen == DEVELOPER_INFO){
             DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);      
               
-            DrawTextEx(font.arial50, text.developerTitleText,{text.developerTitleTextPos.x, text.developerTitleTextPos.y}, text.titleScale, text.spacing, white);                                                        
+            DrawTextEx(font.cour50, text.developerTitleText,/*{text.developerTitleTextPos.x, text.developerTitleTextPos.y}*/{0.0,0.0}, text.titleScale, text.spacing, white);                                                        
         }
         EndDrawing();
     }

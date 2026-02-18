@@ -8,13 +8,13 @@ class textFonts{
         const char torusPath[39] = "assets\\fonts\\TorusNotched-SemiBold.ttf";
         const char torusTitlePath[36] = "assets\\fonts\\TorusNotched-Heavy.ttf";
         const char torusInputPath[38] = "assets\\fonts\\TorusNotched-Regular.ttf";
-        const char arialPath[21] = "assets\fonts\arial.ttf";
+        const char courPath[21] = "assets\fonts\\cour.ttf";
 
     public:
         Font torus50;
         Font torus30;
         Font textboxTorus30;
-        Font arial50;
+        Font cour50;
         
         textFonts(){
             torus50 = LoadFontEx(torusTitlePath, 50, 0, 0);
@@ -26,13 +26,13 @@ class textFonts{
             textboxTorus30 = LoadFontEx(torusInputPath, 30, 0, 0);
             SetTextureFilter(textboxTorus30.texture, TEXTURE_FILTER_BILINEAR);
 
-            arial50 = LoadFontEx(arialPath, 50, 0, 0);
-            SetTextureFilter(arial50.texture, TEXTURE_FILTER_BILINEAR);
+            cour50 = LoadFontEx(courPath, 50, 0, 0);
+            SetTextureFilter(cour50.texture, TEXTURE_FILTER_BILINEAR);
         }
         ~textFonts(){
             UnloadFont(torus50);
             UnloadFont(torus30);
-            UnloadFont(arial50);
+            UnloadFont(cour50);
         }
 };
 
@@ -60,7 +60,8 @@ class texts{
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
 
         char creditsTitleText[8]= "Credits";
-        char developerTitleText[825] = R"( ______               _                         _____       __      
+        char developerTitleText[866] = R"( 
+                                        ______               _                         _____       __      
                                         |  _  \             | |                       |_   _|     / _|     
                                         | | | |_____   _____| | ___  _ __   ___ _ __    | | _ __ | |_ ___  
                                         | | | / _ \ \ / / _ \ |/ _ \| '_ \ / _ \ '__|   | || '_ \|  _/ _ \ 
@@ -118,7 +119,7 @@ class texts{
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
         getCreditsTitleTextScale = MeasureTextEx(font.torus50,creditsTitleText,titleScale,spacing);
-        getDeveloperTitleTextScale = MeasureTextEx(font.torus50,developerTitleText,titleScale,spacing);
+        getDeveloperTitleTextScale = MeasureTextEx(font.cour50,developerTitleText,titleScale,spacing);
 
 
         studentLoginTextPos = {
@@ -171,10 +172,10 @@ class texts{
             (GetScreenWidth()/2) - (getCreditsTitleTextScale.x/2),
             (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
         };
-        developerTitleTextPos = {
+        /*developerTitleTextPos = {
              (GetScreenWidth()/2) - (getDeveloperTitleTextScale.x/2),
             (GetScreenHeight()/5) - (getDeveloperTitleTextScale.y/2)
-        };
+        };*/
     }
 };
 #endif
