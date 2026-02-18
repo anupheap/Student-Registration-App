@@ -5,7 +5,7 @@
 using namespace nlohmann;
 
 
-json data = {
+ordered_json data = {
     {"name", "Undefined"},
     {"id", "Undefined"},
     {"semester", NULL},
@@ -28,7 +28,7 @@ struct StudentInfo{
 struct RegistrationToggles{
     bool toggleStateForGroupings[4] = {false, false, false, false};
     bool toggleStateForUnits[5] = {false, false, false, false, false};
-} registrationToggles;
+};
 
 
 struct Animations{
