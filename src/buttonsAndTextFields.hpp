@@ -7,24 +7,12 @@
 #include <cctype>
 #include "raylib.h"
 #include "reasings.h"
+#include "variables.hpp"
 
-const int IS_EMPTY = 101;
-const int HAS_NUMBERS = 102;
-const int HAS_PROCEDING_WHITESPACE = 103;
-const int HAS_PRECEDING_WHITESPACE = 104;
-const int HAS_INBETWEEN_WHITESPACE = 105;
-const int HAS_SYMBOLS = 106;
-const int HAS_ALPHA_AND_OR_SYMBOLS = 107;
-const int INSUFFICIENT_CHARACTERS = 108;
-const int INVALID_ID_FORMAT = 109;
-const int HAS_WHITESPACE = 110;
-const int INVALID_CHOICE_FOR_SEMESTER = 111;
+using vs = ValiditySafeguards;
 
-
-int nameInputValidation(char* textInput);
-int IDInputValidation(char* numberInput);
-int semesterInputValidation(char* semesterInput);
-int yearInputValidation(char* yearInput);
+vs nameInputValidation(char* textInput);
+vs IDInputValidation(char* numberInput);
 bool toggleState[3];
 class Button
 {
@@ -52,6 +40,7 @@ public:
     ~Button();
     bool Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber);
     bool Draw(Vector2 buttonPos, float scale, float rot);
+    bool Draw(Vector2 buttonPos, float scale, float rot, int toggleNumber, bool toggleAppearance);
     bool isPressed();
 };
 
@@ -180,6 +169,7 @@ bool Button::Draw(Vector2 buttonPos, float scale, float rot)
     return hoveringOverButton;
 }
 
+
 bool Button::isPressed()
 {
     if (((CheckCollisionPointRec(GetMousePosition(), collisionBox)) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))){
@@ -190,7 +180,7 @@ bool Button::isPressed()
     }
 }
 
-int nameInputValidation(char* textInput){
+inline vs nameInputValidation(char* textInput){
     int textInputLength = strlen(textInput);
 
     if (textInputLength == 0){
@@ -209,13 +199,13 @@ int nameInputValidation(char* textInput){
         } else if (!isalpha(textInput[i])){
             return HAS_SYMBOLS;
         } else{
-            return 0;
+            return SAFE;
         }
     }
-    return 0;
+    return SAFE;
 }
 
-inline int IDInputValidation(char *numberInput)
+inline vs IDInputValidation(char *numberInput)
 {
     int numberInputLength = strlen(numberInput);
     if(numberInputLength == 0){
@@ -223,7 +213,7 @@ inline int IDInputValidation(char *numberInput)
     } else if (numberInputLength != 9){
         return INSUFFICIENT_CHARACTERS;
     } else if (numberInput[0] == '7' && numberInput[1] == '0' && numberInput[2] == '0' && numberInput[3] == '0'){
-        return 0 ;
+        return SAFE;
     } else {
         return INVALID_ID_FORMAT;
     }
@@ -233,40 +223,10 @@ inline int IDInputValidation(char *numberInput)
         } else if (!isdigit(numberInput[i])){
             return HAS_ALPHA_AND_OR_SYMBOLS;
         } else {
-            return 0;
+            return SAFE;
         }
     }
-    return 0;
-}
-
-inline int semesterInputValidation(char *semesterInput)
-{
-    if(strlen(semesterInput) == 0){
-        return IS_EMPTY;
-    }else if(semesterInput[0] == '\0'){
-        return HAS_WHITESPACE;
-    }else if(isdigit(semesterInput[0]) && (semesterInput[0] < '1' || semesterInput[0] > '3')){
-        return INVALID_CHOICE_FOR_SEMESTER;
-    }else if(!isdigit(semesterInput[0])){
-        return HAS_ALPHA_AND_OR_SYMBOLS;
-    } else{
-        return 0;
-    }
-}
-
-inline int yearInputValidation(char *yearInput)
-{
-    if(strlen(yearInput) == 0){
-        return IS_EMPTY;
-    }
-    for(int i = 0; i < 4; i++){
-        if(!isdigit(yearInput[i])){
-            return HAS_ALPHA_AND_OR_SYMBOLS;
-        }else if(yearInput[i] == '\0'){
-            return HAS_WHITESPACE;
-        } 
-    }
-    return 0;
+    return SAFE;
 }
 
 #endif
