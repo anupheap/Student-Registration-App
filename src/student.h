@@ -42,13 +42,13 @@ class Student {
             info.studentYear = 2020 + y;
         }
         void setFileName(char* firstName, char* lastName){
-            strcpy(info.studentFileName, "records/student");
+            strcpy(info.studentFileName, "records/students/");
             strcat(info.studentFileName, firstName);
             strcat(info.studentFileName, lastName);
             strcat(info.studentFileName, ".json");
         }
         void setFileName(char* firstName, char* middleName,char* lastName){
-            strcpy(info.studentFileName, "records/student");
+            strcpy(info.studentFileName, "records/students/");
             strcat(info.studentFileName, firstName);
             strcat(info.studentFileName, middleName);
             strcat(info.studentFileName, lastName);

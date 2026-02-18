@@ -40,7 +40,10 @@ message(STATUS "(3).    Post-build commands set to sync assets and DLLs.\n")
 
 file(REMOVE_RECURSE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/records")
 
-file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/records")
+file(
+    COPY "${CMAKE_SOURCE_DIR}/src/records"
+    DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+)
 
 message(STATUS "(4).    Records Database Created and or Overwritten.\n")
 

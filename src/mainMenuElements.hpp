@@ -169,7 +169,7 @@ inline void Panels::Draw(float xpos, float ypos, originDirection selectedDirecti
 
     DrawTextureEx(registrationPanel, currentPos, 0, 1, WHITE);
 }
-
+/*
 void safePush(RegistrationToggles unitSelect, int groupingNumber, bool isSelectAll){
     extern ordered_json data;
     const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
@@ -203,22 +203,29 @@ void safePush(RegistrationToggles unitSelect, int groupingNumber, bool isSelectA
 void safePush(RegistrationToggles unitSelect){
     
 }
-
+*/
 void setRegistration(int groupingNumber){
     extern ordered_json data;
     const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
     const char* units[] = {"Programming", "Physics I", "Mathematics", "Writing And Researching Skills"};
+    bool containsDuplicates = false;
     if(registrations.toggleStateForGroupings[groupingNumber]){
         for (int i = 0; i < 5; i++){
             if(registrations.toggleStateForUnits[4]){
                 for(auto& unitSelection : units){
                     for (auto& [key, value] : data.items()){
-                        if(key == registrationData[groupingNumber]) continue;
                         for(auto& arr : value){
-                            if(arr == unitSelection) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", unitSelection, key.c_str());
+                            if(arr == unitSelection){
+                                TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", unitSelection, key.c_str());
+                                containsDuplicates = true;
+                            }
                         }
                     }
-                    data[registrationData[groupingNumber]].push_back(unitSelection);
+                    if(!containsDuplicates){
+                        data[registrationData[groupingNumber]].push_back(unitSelection);
+                        TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", unitSelection, registrationData[groupingNumber]);
+                    }
+                    else return;
                 }
                 break;
             }
@@ -226,16 +233,25 @@ void setRegistration(int groupingNumber){
                 for (auto& [key, value] : data.items()){
                     if(key == registrationData[groupingNumber]){
                         for(auto& arr : value){
-                            if(arr == units[i]) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
+                            if(arr == units[i]) {
+                                TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
+                                containsDuplicates = true;
+                            }
                         }
                         continue;
                     }
                     for(auto& arr : value){
-                        if(arr == units[i]) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
+                        if(arr == units[i]){
+                            TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
+                            containsDuplicates = true;
+                        }
                     }
-
                 }
-                data[registrationData[groupingNumber]].push_back(units[i]);
+                if(!containsDuplicates){
+                    data[registrationData[groupingNumber]].push_back(units[i]);
+                     TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", units[i], registrationData[groupingNumber]);
+                }
+                else return;
             }
         }
     }
