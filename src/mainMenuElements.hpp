@@ -10,6 +10,8 @@
 #include "nlohmann/json.hpp"
 #include <fstream>
 
+void availibilityDecrease(const char* selectedUnit);
+
 RegistrationToggles registrations;
 class Bars{
     private:
@@ -169,41 +171,7 @@ inline void Panels::Draw(float xpos, float ypos, originDirection selectedDirecti
 
     DrawTextureEx(registrationPanel, currentPos, 0, 1, WHITE);
 }
-/*
-void safePush(RegistrationToggles unitSelect, int groupingNumber, bool isSelectAll){
-    extern ordered_json data;
-    const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
-    const char* units[] = {"Programming", "Physics I", "Mathematics", "Writing And Researching Skills"};
-    if(isSelectAll){
-        for(auto& unitSelection : units){
-            for (auto& [key, value] : data.items()){
-                if(key == registrationData[groupingNumber]) continue;
-                for(auto& arr : value){
-                    if(arr == unitSelection) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", unitSelection, key.c_str());
-                }
-            }
-            data[registrationData[groupingNumber]].push_back(unitSelection);
-        }
-    }else{
-        for (auto& [key, value] : data.items()){
-            if(key == registrationData[groupingNumber]){
-                for(auto& arr : value){
-                    if(arr == units[i]) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
-                }
-                continue;
-            }
-            for(auto& arr : value){
-                if(arr == units[i]) TraceLog(LOG_WARNING, "\"%s\" Already exists in group \"%s\"", units[i], key.c_str());
-            }
 
-        }
-        data[registrationData[groupingNumber]].push_back(units[i]);
-    }
-}
-void safePush(RegistrationToggles unitSelect){
-    
-}
-*/
 void setRegistration(int groupingNumber){
     extern ordered_json data;
     const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
@@ -223,6 +191,7 @@ void setRegistration(int groupingNumber){
                     }
                     if(!containsDuplicates){
                         data[registrationData[groupingNumber]].push_back(unitSelection);
+                        //availibilityDecrease(unitSelection);
                         TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", unitSelection, registrationData[groupingNumber]);
                     }
                     else return;
@@ -249,7 +218,8 @@ void setRegistration(int groupingNumber){
                 }
                 if(!containsDuplicates){
                     data[registrationData[groupingNumber]].push_back(units[i]);
-                     TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", units[i], registrationData[groupingNumber]);
+                    //availibilityDecrease(units[i]);
+                    TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", units[i], registrationData[groupingNumber]);
                 }
                 else return;
             }
@@ -285,4 +255,51 @@ void primeJsonFile(){
     }
     inDocs.close();
 }
+/*
+inline void availibilityDecrease(const char* selectedUnit){
+    extern ordered_json data;
+    ordered_json availableSlots;
+    const char* years[7] = {"year2024.json", "year2025.json", "year2026.json", "year2027.json", "year2028.json", "year2029.json", "year2030.json"};
+    char filePath[500] = "records/availableSlots/";
+    switch(info.studentYear){
+        case (2024):{
+            strcat(filePath, years[0]);
+            break;
+        }
+        case (2025):{
+            strcat(filePath, years[1]);
+            break;
+        }
+        case (2026):{
+            strcat(filePath, years[2]);
+            break;
+        }
+        case (2027):{
+            strcat(filePath, years[3]);
+            break;
+        }
+        case (2028):{
+            strcat(filePath, years[4]);
+            break;
+        }
+        case(2029):{
+            strcat(filePath, years[5]);
+            break;            
+        }
+        case (2030):{
+            strcat(filePath, years[6]);
+            break;            
+        }
+    };
+    ifstream availableSlotsIn(filePath);
+    availableSlotsIn >> availableSlots;
+    availableSlotsIn.close();
+    if (availableSlots.contains(selectedUnit) && availableSlots[selectedUnit].is_number()) {
+        availableSlots[selectedUnit] = data[selectedUnit].get<int>() - 1;
+    }
+    ofstream availableSlotsOut(filePath);
+    availableSlotsOut << availableSlots.dump(4);
+    availableSlotsOut.close();
+}
+*/
 #endif

@@ -464,7 +464,7 @@ int main(){
             }
             if (GuiDropdownBox(semesterInputBox, "1;2;3", &semesterSelection, semesterToggle)) semesterToggle = !semesterToggle;
             DrawTextEx(font.torus30, text.yearText, text.yearTextPos, text.subtitleScale, text.spacing, white);
-            if (GuiDropdownBox(yearInputBox, "2020;2021;2022;2023;2024;2025;2026", &yearSelection, yearToggle)) yearToggle = !yearToggle;
+            if (GuiDropdownBox(yearInputBox, "2024;2025;2026;2027;2028;2029;2030", &yearSelection, yearToggle)) yearToggle = !yearToggle;
             
             if (confirm.isPressed() && !yearToggle)
             {
@@ -500,7 +500,7 @@ int main(){
                 grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, registrations.toggleStateForGroupings, font);
                 programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, registrations.toggleStateForUnits, font);
                 physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, registrations.toggleStateForUnits, font);
-                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics", 2, registrations.toggleStateForUnits, font);
+                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics II", 2, registrations.toggleStateForUnits, font);
                 writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, registrations.toggleStateForUnits, font);
                 selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, registrations.toggleStateForUnits, font);
                 submitButton.Draw({GetScreenWidth()/2.0f, 660.0f}, 0.35f, 0);
@@ -510,6 +510,12 @@ int main(){
                     setRegistration(2);
                     setRegistration(3);
                     writeIntoJson();
+                    for(auto& units : registrations.toggleStateForUnits){
+                        units = false;
+                    }
+                    for(auto& groupings : registrations.toggleStateForGroupings){
+                        groupings = false;
+                    }
                 }
                 
             }

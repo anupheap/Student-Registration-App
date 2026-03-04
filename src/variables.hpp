@@ -4,7 +4,6 @@
 
 using namespace nlohmann;
 
-
 ordered_json data = {
     {"name", "Undefined"},
     {"id", "Undefined"},
