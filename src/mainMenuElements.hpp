@@ -9,6 +9,7 @@
 #include "buttonsAndTextFields.hpp"
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include "student.h"
 
 void availibilityDecrease(const char* selectedUnit);
 
@@ -191,7 +192,7 @@ void setRegistration(int groupingNumber){
                     }
                     if(!containsDuplicates){
                         data[registrationData[groupingNumber]].push_back(unitSelection);
-                        //availibilityDecrease(unitSelection);
+                        availibilityDecrease(unitSelection);
                         TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", unitSelection, registrationData[groupingNumber]);
                     }
                     else return;
@@ -218,7 +219,7 @@ void setRegistration(int groupingNumber){
                 }
                 if(!containsDuplicates){
                     data[registrationData[groupingNumber]].push_back(units[i]);
-                    //availibilityDecrease(units[i]);
+                    availibilityDecrease(units[i]);
                     TraceLog(LOG_INFO, "\"%s\" Added to group \"%s\"", units[i], registrationData[groupingNumber]);
                 }
                 else return;
@@ -255,51 +256,45 @@ void primeJsonFile(){
     }
     inDocs.close();
 }
-/*
+
 inline void availibilityDecrease(const char* selectedUnit){
     extern ordered_json data;
-    ordered_json availableSlots;
     const char* years[7] = {"year2024.json", "year2025.json", "year2026.json", "year2027.json", "year2028.json", "year2029.json", "year2030.json"};
-    char filePath[500] = "records/availableSlots/";
-    switch(info.studentYear){
-        case (2024):{
-            strcat(filePath, years[0]);
-            break;
-        }
-        case (2025):{
-            strcat(filePath, years[1]);
-            break;
-        }
-        case (2026):{
-            strcat(filePath, years[2]);
-            break;
-        }
-        case (2027):{
-            strcat(filePath, years[3]);
-            break;
-        }
-        case (2028):{
-            strcat(filePath, years[4]);
-            break;
-        }
-        case(2029):{
-            strcat(filePath, years[5]);
-            break;            
-        }
-        case (2030):{
-            strcat(filePath, years[6]);
-            break;            
-        }
-    };
+    char filePath[500] = "records/availableSlot/";
+    if(info.studentYear == 2024) strcat(filePath, years[0]);
+    
+    TraceLog(LOG_INFO, filePath);
+    ordered_json availableSlots;
     ifstream availableSlotsIn(filePath);
-    availableSlotsIn >> availableSlots;
-    availableSlotsIn.close();
-    if (availableSlots.contains(selectedUnit) && availableSlots[selectedUnit].is_number()) {
-        availableSlots[selectedUnit] = data[selectedUnit].get<int>() - 1;
+    
+    if(!availableSlotsIn.is_open()){
+        availableSlots = {
+            {"Programming", 15},
+            {"Physics I", 15},
+            {"Mathematics II", 15},
+            {"Writing and Researching Skills", 15}
+        };
+        ofstream slotFileOut(filePath);
+        slotFileOut << availableSlots.dump(4);
+        slotFileOut.close();
+    } else{
+        availableSlotsIn >> availableSlots;
+        TraceLog(LOG_INFO, "Copying Data");
     }
+    availableSlotsIn.close();
+    if (availableSlots[selectedUnit].is_number_integer()) {
+        availableSlots[selectedUnit] = availableSlots[selectedUnit].get<int>() - 1;
+        if(availableSlots[selectedUnit] == 14) TraceLog(LOG_INFO, "Deducted");
+    }
+   // availableSlots[selectedUnit] = availableSlots[selectedUnit].get<int>() - 1;
+    /*
+    if (availableSlots.contains(selectedUnit) && availableSlots[selectedUnit].is_number()) {
+        availableSlots[selectedUnit] = availableSlots[selectedUnit].get<int>() - 1;
+    }
+        */
     ofstream availableSlotsOut(filePath);
     availableSlotsOut << availableSlots.dump(4);
     availableSlotsOut.close();
 }
-*/
+
 #endif
