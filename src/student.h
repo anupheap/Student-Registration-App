@@ -39,7 +39,7 @@ class Student {
         }
         void setSemesterAndYear(int s, int y){ 
             info.studentSemester = s;
-            info.studentYear = 2020 + y;
+            info.studentYear = 2024 + y;
         }
         void setFileName(char* firstName, char* lastName){
             strcpy(info.studentFileName, "records/students/");
@@ -70,5 +70,8 @@ class Student {
     bool hasRegistrations() { return !registrations.empty(); }
     vector<Registration> getRegistrations() { return registrations; }
 };
+int getYear(){
+    return info.studentYear;
+}
 
 #endif
