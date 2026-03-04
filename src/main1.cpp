@@ -61,10 +61,11 @@ int main(){
         ImageResizeNN(&logo, 256, 256);
 
     // Initialize Classes, Buttons, Text input Boxes and Game Screen
+        char* fileData = LoadFileText("src\\art.txt"); //loads ascii art file
         Student student;
         Screen currentScreen = SCREEN_LOGIN;
         textFonts font;
-        texts text(font);
+        texts text(font, fileData);
 
         //"NEXT" Button
         Button next(
@@ -184,6 +185,7 @@ int main(){
     CheckBoxesForUnits mathematics;
     CheckBoxesForUnits writingNResearchSkills;
     CheckBoxesForUnits selectAll;
+
 
 
     while (!WindowShouldClose())
@@ -539,9 +541,9 @@ int main(){
             }
         }
         if (currentScreen == DEVELOPER_INFO){
-            DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);      
-              
-            DrawTextEx(font.cour50, text.developerTitleText,{text.developerTitleTextPos.x, text.developerTitleTextPos.y}, text.titleScale, text.spacing, white);                                                        
+            //DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);      
+
+            DrawTextEx(font.fira12, fileData, text.artPos, text.artScale, text.spacing, white);
         }
         EndDrawing();
     }

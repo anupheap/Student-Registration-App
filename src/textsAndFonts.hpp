@@ -8,13 +8,13 @@ class textFonts{
         const char torusPath[39] = "assets\\fonts\\TorusNotched-SemiBold.ttf";
         const char torusTitlePath[36] = "assets\\fonts\\TorusNotched-Heavy.ttf";
         const char torusInputPath[38] = "assets\\fonts\\TorusNotched-Regular.ttf";
-        const char courPath[21] = "assets\fonts\\cour.ttf";
+        const char firaPath[26] ="assets\\fonts\\FiraCode.ttf";
 
     public:
         Font torus50;
         Font torus30;
         Font textboxTorus30;
-        Font cour50;
+        Font fira12;
         
         textFonts(){
             torus50 = LoadFontEx(torusTitlePath, 50, 0, 0);
@@ -26,13 +26,15 @@ class textFonts{
             textboxTorus30 = LoadFontEx(torusInputPath, 30, 0, 0);
             SetTextureFilter(textboxTorus30.texture, TEXTURE_FILTER_BILINEAR);
 
-            cour50 = LoadFontEx(courPath, 50, 0, 0);
-            SetTextureFilter(cour50.texture, TEXTURE_FILTER_BILINEAR);
+            
+            fira12 = LoadFontEx(firaPath, 12, 0, 0);
+            SetTextureFilter(fira12.texture, TEXTURE_FILTER_POINT);
+
         }
         ~textFonts(){
             UnloadFont(torus50);
             UnloadFont(torus30);
-            UnloadFont(cour50);
+            UnloadFont(fira12);
         }
 };
 
@@ -44,6 +46,7 @@ class texts{
         float spacing = 3.0f;
         float titleScale = 50.0f;
         float subtitleScale = 30.0f;
+        float artScale = 12.0f;
     //Text Values
         char studentLoginText[14] = "STUDENT LOGIN";
         char firstNameText[12] = "First Name:";
@@ -59,17 +62,7 @@ class texts{
         char registrationText[32] = "Welcome to the Grouping Module,";
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
 
-        char creditsTitleText[8]= "Credits";
-        char developerTitleText[866] = R"( 
-                                        ______               _                         _____       __      
-                                        |  _  \             | |                       |_   _|     / _|     
-                                        | | | |_____   _____| | ___  _ __   ___ _ __    | | _ __ | |_ ___  
-                                        | | | / _ \ \ / / _ \ |/ _ \| '_ \ / _ \ '__|   | || '_ \|  _/ _ \ 
-                                        | |/ /  __/\ V /  __/ | (_) | |_) |  __/ |     _| || | | | || (_) |
-                                        |___/ \___| \_/ \___|_|\___/| .__/ \___|_|     \___/_| |_|_| \___/ 
-                                                                    | |                                    
-                                                                    |_|                                    )";
-
+        char creditsTitleText[8]= "Credits";    
     //Text Scales
         Vector2 getStudentLoginTextScale;
         Vector2 getFirstNameTextScale;
@@ -103,8 +96,11 @@ class texts{
         Vector2 viewOrPrintTextPos;
         Vector2 CreditsTitleTextPos;
         Vector2 developerTitleTextPos;
+        Vector2 artPos;
+        Vector2 getArtScale;
 
-    texts(textFonts &f) : font(f){
+
+    texts(textFonts &f, const char* artData) : font(f){
         getStudentLoginTextScale = MeasureTextEx(font.torus50, studentLoginText, titleScale, spacing);
         getFirstNameTextScale = MeasureTextEx(font.torus30, firstNameText, subtitleScale, spacing);
         getMiddleNameTextScale = MeasureTextEx(font.torus30, middleNameText, subtitleScale, spacing);
@@ -119,8 +115,7 @@ class texts{
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
         getCreditsTitleTextScale = MeasureTextEx(font.torus50,creditsTitleText,titleScale,spacing);
-        getDeveloperTitleTextScale = MeasureTextEx(font.cour50,developerTitleText,titleScale,spacing);
-
+        getArtScale = MeasureTextEx(font.fira12, artData, 12.0f, 0);
 
         studentLoginTextPos = {
             (GetScreenWidth()/2) - (getStudentLoginTextScale.x/2),
@@ -172,10 +167,10 @@ class texts{
             (GetScreenWidth()/2) - (getCreditsTitleTextScale.x/2),
             (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
         };
-        /*developerTitleTextPos = {
-             (GetScreenWidth()/2) - (getDeveloperTitleTextScale.x/2),
-            (GetScreenHeight()/5) - (getDeveloperTitleTextScale.y/2)
-        };*/
+        artPos = {
+            (GetScreenWidth() / 2.0f) - (getArtScale.x / 2.0f)-220, // Center horizontally
+            CreditsTitleTextPos.y + getCreditsTitleTextScale.y-100 // Position 20px below "Credits"
+        };
     }
 };
 #endif
