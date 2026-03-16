@@ -1,22 +1,16 @@
 //     __ _____ _____ _____
 //  __|  |   __|     |   | |  JSON for Modern C++
-// |  |  |__   |  |  | | | |  version 3.12.0
+// |  |  |__   |  |  | | | |  version 3.11.3
 // |_____|_____|_____|_|___|  https://github.com/nlohmann/json
 //
-// SPDX-FileCopyrightText: 2013-2026 Niels Lohmann <https://nlohmann.me>
+// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
-#include <nlohmann/detail/macro_scope.hpp> // JSON_HAS_CPP_17
-#ifdef JSON_HAS_CPP_17
-    #include <optional> // optional
-#endif
-
 #include <algorithm> // copy
 #include <iterator> // begin, end
-#include <memory> // allocator_traits
-#include <string> //  basic_string, char_traits
+#include <string> // string
 #include <tuple> // tuple, get
 #include <type_traits> // is_same, is_constructible, is_floating_point, is_enum, underlying_type
 #include <utility> // move, forward, declval, pair
@@ -24,6 +18,7 @@
 #include <vector> // vector
 
 #include <nlohmann/detail/iterators/iteration_proxy.hpp>
+#include <nlohmann/detail/macro_scope.hpp>
 #include <nlohmann/detail/meta/cpp_future.hpp>
 #include <nlohmann/detail/meta/std_fs.hpp>
 #include <nlohmann/detail/meta/type_traits.hpp>
@@ -265,22 +260,6 @@ struct external_constructor<value_t::object>
 // to_json //
 /////////////
 
-#ifdef JSON_HAS_CPP_17
-template<typename BasicJsonType, typename T,
-         enable_if_t<std::is_constructible<BasicJsonType, T>::value, int> = 0>
-void to_json(BasicJsonType& j, const std::optional<T>& opt) noexcept
-{
-    if (opt.has_value())
-    {
-        j = *opt;
-    }
-    else
-    {
-        j = nullptr;
-    }
-}
-#endif
-
 template<typename BasicJsonType, typename T,
          enable_if_t<std::is_same<T, typename BasicJsonType::boolean_t>::value, int> = 0>
 inline void to_json(BasicJsonType& j, T b) noexcept
@@ -341,8 +320,7 @@ template<typename BasicJsonType, typename EnumType,
 inline void to_json(BasicJsonType& j, EnumType e) noexcept
 {
     using underlying_type = typename std::underlying_type<EnumType>::type;
-    static constexpr value_t integral_value_t = std::is_unsigned<underlying_type>::value ? value_t::number_unsigned : value_t::number_integer;
-    external_constructor<integral_value_t>::construct(j, static_cast<underlying_type>(e));
+    external_constructor<value_t::number_integer>::construct(j, static_cast<underlying_type>(e));
 }
 #endif  // JSON_DISABLE_ENUM_SERIALIZATION
 
@@ -427,13 +405,6 @@ inline void to_json_tuple_impl(BasicJsonType& j, const Tuple& t, index_sequence<
     j = { std::get<Idx>(t)... };
 }
 
-template<typename BasicJsonType, typename Tuple>
-inline void to_json_tuple_impl(BasicJsonType& j, const Tuple& /*unused*/, index_sequence<> /*unused*/)
-{
-    using array_t = typename BasicJsonType::array_t;
-    j = array_t();
-}
-
 template<typename BasicJsonType, typename T, enable_if_t<is_constructible_tuple<BasicJsonType, T>::value, int > = 0>
 inline void to_json(BasicJsonType& j, const T& t)
 {
@@ -441,21 +412,10 @@ inline void to_json(BasicJsonType& j, const T& t)
 }
 
 #if JSON_HAS_FILESYSTEM || JSON_HAS_EXPERIMENTAL_FILESYSTEM
-#if defined(__cpp_lib_char8_t)
-template<typename BasicJsonType, typename Tr, typename Allocator>
-inline void to_json(BasicJsonType& j, const std::basic_string<char8_t, Tr, Allocator>& s)
-{
-    using OtherAllocator = typename std::allocator_traits<Allocator>::template rebind_alloc<char>;
-    j = std::basic_string<char, std::char_traits<char>, OtherAllocator>(s.begin(), s.end(), s.get_allocator());
-}
-#endif
-
 template<typename BasicJsonType>
 inline void to_json(BasicJsonType& j, const std_fs::path& p)
 {
-    // Returns either a std::string or a std::u8string depending whether library
-    // support for char8_t is enabled.
-    j = p.u8string();
+    j = p.string();
 }
 #endif
 
