@@ -176,7 +176,7 @@ inline void Panels::Draw(float xpos, float ypos, originDirection selectedDirecti
 void setRegistration(int groupingNumber){
     extern ordered_json data;
     const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
-    const char* units[] = {"Programming", "Physics I", "Mathematics", "Writing And Researching Skills"};
+    const char* units[] = {"Programming", "Physics I", "Mathematics II", "Writing And Researching Skills"};
     bool containsDuplicates = false;
     if(registrations.toggleStateForGroupings[groupingNumber]){
         for (int i = 0; i < 5; i++){
@@ -260,7 +260,7 @@ void primeJsonFile(){
 inline void availibilityDecrease(const char* selectedUnit){
     extern ordered_json data;
     const char* years[7] = {"year2024.json", "year2025.json", "year2026.json", "year2027.json", "year2028.json", "year2029.json", "year2030.json"};
-    char filePath[500] = "records/availableSlot/";
+    char filePath[500] = "records/availableSlots/";
     if(info.studentYear == 2024) strcat(filePath, years[0]);
     
     TraceLog(LOG_INFO, filePath);
@@ -285,6 +285,7 @@ inline void availibilityDecrease(const char* selectedUnit){
     if (availableSlots[selectedUnit].is_number_integer()) {
         availableSlots[selectedUnit] = availableSlots[selectedUnit].get<int>() - 1;
         if(availableSlots[selectedUnit] == 14) TraceLog(LOG_INFO, "Deducted");
+        TraceLog(LOG_INFO, filePath);
     }
    // availableSlots[selectedUnit] = availableSlots[selectedUnit].get<int>() - 1;
     /*
@@ -293,8 +294,14 @@ inline void availibilityDecrease(const char* selectedUnit){
     }
         */
     ofstream availableSlotsOut(filePath);
+    if(!availableSlotsOut.is_open()){
+        TraceLog(LOG_ERROR, "FAILED TO OPEN FILE");
+    }
     availableSlotsOut << availableSlots.dump(4);
     availableSlotsOut.close();
+    if(availableSlotsOut.fail()){
+        TraceLog(LOG_ERROR, "FAILED TO WRITE INTO FILE");
+    }
 }
 
 #endif
