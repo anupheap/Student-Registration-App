@@ -160,11 +160,13 @@ int main(){
     bool IDValidity = false;
     bool yearValidity = false;
     Color white = WHITE;
+    Color gray = {211, 211, 211, 255};
     Color purple = {140, 102, 255, 255};
     Color backgroundColor = {49, 46, 56, 255};
     Color baseColor = {36, 34, 43, 255};
     Color baseTextColor = {150, 140, 171, 255};
     Color focusedTextColor = {204, 193, 230, 255};
+    Color transparentBlack = {10, 10, 10, 100};
     
     Color viewOrPrintBarColor = {102, 204, 255, 255};
     Color registrationBarColor = {172, 247, 98, 255};
@@ -502,12 +504,14 @@ int main(){
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
-            
+            DrawTextEx(font.torus30, text.welcomeMainMenuText1, text.welcomeMainMenuText1Pos, text.subtitleScale, text.spacing, gray);
+            DrawTextEx(font.torus30, text.welcomeMainMenuText2, text.welcomeMainMenuText2Pos, text.subtitleScale, text.spacing, gray);
             if(toggleState[0]){
                 hoverAnyButton = false;
                 currentScreen = DEVELOPER_INFO;
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
+            if (toggleState[1] || toggleState[2]) DrawRectangle(0, 0, 1280, 720, transparentBlack);
             registrationPanelA.Draw(10.0f, 228.0f, BOTTOMLEFT, 1);
             registrationPanelB.Draw((float)(GetScreenWidth() - 621.0f), 228.0f, TOPRIGHT, 1);
             registrationBar.Draw(1);

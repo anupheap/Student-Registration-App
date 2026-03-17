@@ -61,8 +61,9 @@ class texts{
         char mainMenuText[10] = "Main Menu";
         char registrationText[32] = "Welcome to the Grouping Module,";
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
-
-        char creditsTitleText[8]= "Credits";    
+        char creditsTitleText[8]= "Credits";  
+        char welcomeMainMenuText1[26] = "Welcome to the Main Menu!";
+        char welcomeMainMenuText2[65] = "You may click on either \"registration\" or \"view/print\" to begin."; 
     //Text Scales
         Vector2 getStudentLoginTextScale;
         Vector2 getFirstNameTextScale;
@@ -72,6 +73,8 @@ class texts{
         Vector2 getSemesterDetailsTextScale;
         Vector2 getSemesterTextScale;
         Vector2 getYearTextScale;
+        Vector2 getWelcomeMainMenuText1Scale;
+        Vector2 getWelcomeMainMenuText2Scale;
 
         // testing
         Vector2 getMainMenuTextScale;
@@ -88,7 +91,8 @@ class texts{
         Vector2 semesterDetailsTextPos;
         Vector2 semesterTextPos;
         Vector2 yearTextPos;
-        
+        Vector2 welcomeMainMenuText1Pos;
+        Vector2 welcomeMainMenuText2Pos;
 
         //testing 
         Vector2 mainMenuTextPos;
@@ -115,6 +119,8 @@ class texts{
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
         getCreditsTitleTextScale = MeasureTextEx(font.torus50,creditsTitleText,titleScale,spacing);
+        getWelcomeMainMenuText1Scale = MeasureTextEx(font.torus30, welcomeMainMenuText1, subtitleScale, spacing);
+        getWelcomeMainMenuText2Scale = MeasureTextEx(font.torus30, welcomeMainMenuText2, subtitleScale, spacing);
         getArtScale = MeasureTextEx(font.fira12, artData, 12.0f, 0);
 
         studentLoginTextPos = {
@@ -166,6 +172,14 @@ class texts{
         CreditsTitleTextPos = {
             (GetScreenWidth()/2) - (getCreditsTitleTextScale.x/2),
             (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
+        };
+        welcomeMainMenuText1Pos = {
+            (GetScreenWidth()/2) - (getWelcomeMainMenuText1Scale.x/2),
+            (GetScreenHeight()/2) - (getWelcomeMainMenuText1Scale.y/2)
+        };
+        welcomeMainMenuText2Pos = {
+            (GetScreenWidth()/2) - (getWelcomeMainMenuText2Scale.x/2),
+            (GetScreenHeight()/2) - (getWelcomeMainMenuText2Scale.y/2) + 40
         };
         artPos = {
             (GetScreenWidth() / 2.0f) - (getArtScale.x / 2.0f)-220, // Center horizontally
