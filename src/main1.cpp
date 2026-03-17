@@ -428,7 +428,7 @@ int main(){
                     }
                 }
                 if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
-                { 
+                {
                     if(strlen(middleNameBuffer) == 0){
                         student.setName(firstNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, lastNameBuffer);
@@ -438,6 +438,28 @@ int main(){
                     }
                     student.setID(IDBuffer);
                     student.setDisplayName();
+                    setStudentInfo();
+                    TraceLog(LOG_INFO, info.studentFileName);
+                    ifstream currentStudentRecordPath(info.studentFileName);
+                    if(!currentStudentRecordPath.is_open()){
+                        TraceLog(LOG_WARNING, "NO EXISTING FILE FOUND WITH PROVIDED PATH: %s", info.studentFileName);
+                        TraceLog(LOG_INFO, "ATTEMPTING TO CREATE FILE WITH PROVIDED PATH: %s", info.studentFileName);
+                        ofstream currentStudentRecordPathOut(info.studentFileName);
+                        if(!currentStudentRecordPathOut.is_open()) TraceLog(LOG_ERROR, "UNEXPECTED ERROR ENCOUNTERED, ATTEMPT TO DIAGNOSE PRETTY PLEASE :3");
+                        else if(currentStudentRecordPathOut.is_open()){
+                            currentStudentRecordPathOut << data.dump(8);
+                            TraceLog(LOG_INFO, "SUCCESSFULLY SET STUDENT INFORMATION IN FILE: %s", info.studentFileName);
+                            currentStudentRecordPath.close();
+                        }
+                    } else if (currentStudentRecordPath.is_open()){
+                        currentStudentRecordPath >> data;
+                        if(data["id"] == IDBuffer){
+                            currentStudentRecordPath.close();
+                            currentScreen = MAIN_MENU;
+                            continue;
+                        }
+                    }
+                    currentStudentRecordPath.close();
                     currentScreen = SEMESTER_SCREEN;
                 }
             }
@@ -472,7 +494,7 @@ int main(){
             {
                 student.setSemesterAndYear(semesterSelection + 1, yearSelection);
                 setStudentInfo();
-                primeJsonFile();
+                writeIntoJson();
                 currentScreen = MAIN_MENU;
             }
         }

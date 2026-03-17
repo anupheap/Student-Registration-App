@@ -75,7 +75,6 @@ inline void recalculateSlots(int year){
     }
 }
 
-// ---------------------------------------------------------------------------
 
 RegistrationToggles registrations;
 
@@ -288,7 +287,7 @@ void writeIntoJson(){
         }
     }
 
-    recalculateSlots(info.studentYear);
+    recalculateSlots(data["year"]);
 }
 
 void primeJsonFile(){

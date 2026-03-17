@@ -7,7 +7,6 @@
 
 using namespace std;
 
-// --- Data Structures ---
 struct Registration {
     string unitName;
     string groupName;
@@ -54,8 +53,10 @@ class Student {
             strcat(info.studentFileName, lastName);
             strcat(info.studentFileName, ".json");
         }
-    
-    // Logic
+        char* getStudentFilePath(){
+            return info.studentFileName;
+        }
+
     void addRegistration(string unit, string group, int uIndex) {
         registrations.push_back({unit, group, uIndex});
     }
