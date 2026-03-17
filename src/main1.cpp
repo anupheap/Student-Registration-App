@@ -429,40 +429,51 @@ int main(){
                         strcpy(errorMessageForID, "\0");
                     }
                 }
-                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
-                {
-                    if(strlen(middleNameBuffer) == 0){
+                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) {
+                    // 1. ALWAYS set the filename first based on input
+                    if (strlen(middleNameBuffer) == 0) {
                         student.setName(firstNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, lastNameBuffer);
-                    } else{
+                    } else {
                         student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
                     }
                     student.setID(IDBuffer);
                     student.setDisplayName();
-                    setStudentInfo();
-                    TraceLog(LOG_INFO, info.studentFileName);
-                    ifstream currentStudentRecordPath(info.studentFileName);
-                    if(!currentStudentRecordPath.is_open()){
-                        TraceLog(LOG_WARNING, "NO EXISTING FILE FOUND WITH PROVIDED PATH: %s", info.studentFileName);
-                        TraceLog(LOG_INFO, "ATTEMPTING TO CREATE FILE WITH PROVIDED PATH: %s", info.studentFileName);
-                        ofstream currentStudentRecordPathOut(info.studentFileName);
-                        if(!currentStudentRecordPathOut.is_open()) TraceLog(LOG_ERROR, "UNEXPECTED ERROR ENCOUNTERED, ATTEMPT TO DIAGNOSE PRETTY PLEASE :3");
-                        else if(currentStudentRecordPathOut.is_open()){
-                            currentStudentRecordPathOut << data.dump(8);
-                            TraceLog(LOG_INFO, "SUCCESSFULLY SET STUDENT INFORMATION IN FILE: %s", info.studentFileName);
-                            currentStudentRecordPath.close();
+
+                    // 2. Check if this specific student file already exists
+                    std::string fullPath = buildPath(info.studentFileName);
+                    std::ifstream existingFile(fullPath);
+
+                    if (existingFile.is_open()) {
+                        try {
+                            existingFile >> data;
+                            existingFile.close();
+
+                            // 3. If Name exists and ID matches -> Returning Student (SKIP)
+                            if (data.contains("id") && data["id"] == IDBuffer) {
+                                TraceLog(LOG_INFO, "Returning student detected. Skipping to Main Menu.");
+                                currentScreen = MAIN_MENU; 
+                            } 
+                            else {
+                                // Name exists but ID is different? 
+                                // This could be a different student with the same name.
+                                strcpy(errorMessageForID, "[ERROR] Name exists but ID mismatch!");
+                            }
+                        } catch (...) {
+                            existingFile.close();
                         }
-                    } else if (currentStudentRecordPath.is_open()){
-                        currentStudentRecordPath >> data;
-                        if(data["id"] == IDBuffer){
-                            currentStudentRecordPath.close();
-                            currentScreen = MAIN_MENU;
-                            continue;
+                    } 
+                    else {
+                        // 4. File doesn't exist. Is this ID being used by SOMEONE ELSE?
+                        if (isIDDuplicate(IDBuffer)) {
+                            strcpy(errorMessageForID, "[ERROR] ID already registered to another name!");
+                        } else {
+                            // 5. Truly a new student -> Go to Semester Screen
+                            setStudentInfo();
+                            currentScreen = SEMESTER_SCREEN;
                         }
                     }
-                    currentStudentRecordPath.close();
-                    currentScreen = SEMESTER_SCREEN;
                 }
             }
             DrawText(errorMessageForFirstName, 10, errorMessageForFirstNamePosY, 20, RED);
@@ -522,15 +533,31 @@ int main(){
                 Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                
+                bool isProgFull = (getAvailableSlots("Programming", data["year"]) <= 0);
+                bool isPhyFull = (getAvailableSlots("Physics I", data["year"]) <= 0);
+                bool isMathFull = (getAvailableSlots("Mathematics II", data["year"]) <= 0);
+                bool isWritingFull = (getAvailableSlots("Writing and Researching skills", data["year"]) <= 0);
+
+
+                bool progLocked = isUnitRegistered("Programming", data) || isProgFull;
+                bool physLocked = isUnitRegistered("Physics I", data) || isPhyFull;
+                bool mathLocked = isUnitRegistered("Mathematics II", data) || isMathFull;
+                bool writLocked = isUnitRegistered("Writing And Researching Skills", data) || isWritingFull;
+
+                bool selectAllLocked = (progLocked || physLocked || mathLocked || writLocked);
+
                 grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, registrations.toggleStateForGroupings, font);
                 grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, registrations.toggleStateForGroupings, font);
                 grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, registrations.toggleStateForGroupings, font);
                 grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, registrations.toggleStateForGroupings, font);
-                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, registrations.toggleStateForUnits, font);
-                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, registrations.toggleStateForUnits, font);
-                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics II", 2, registrations.toggleStateForUnits, font);
-                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, registrations.toggleStateForUnits, font);
-                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, registrations.toggleStateForUnits, font);
+
+                programming.Draw(700.0f, 365.0f, "Programming", 0, registrations.toggleStateForUnits, font, progLocked);
+                physics.Draw(697.0f, 410.0f, "Physics I", 1, registrations.toggleStateForUnits, font, physLocked);
+                mathematics.Draw(694.0f, 455.0f, "Mathematics II", 2, registrations.toggleStateForUnits, font, mathLocked);
+                writingNResearchSkills.Draw(691.0f, 500.0f, "Writing And Researching Skills", 3, registrations.toggleStateForUnits, font, writLocked);
+                
+                selectAll.Draw(688.0f, 545.0f, "Select All Units", 4, registrations.toggleStateForUnits, font, selectAllLocked);
                 submitButton.Draw({GetScreenWidth()/2.0f, 660.0f}, 0.35f, 0);
                 if(submitButton.isPressed()){
                     setRegistration(0);
