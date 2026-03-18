@@ -456,6 +456,10 @@ int main(){
                     }
                 }
             }
+            DrawText(errorMessageForFirstName, 10, 610, 20, RED);
+            DrawText(errorMessageForMiddleName, 10, 630, 20, RED);
+            DrawText(errorMessageForLastName, 10, 650, 20, RED);
+            DrawText(errorMessageForID, 10, 670, 20, RED);
         }
 
 
@@ -501,7 +505,8 @@ int main(){
                 currentScreen = DEVELOPER_INFO;
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
-            if (toggleState[1] || toggleState[2]) DrawRectangle(0, 0, 1280, 720, transparentBlack);
+            if (toggleState[1]) DrawRectangle(0, 0, 1280, 720, transparentBlack);
+            if(toggleState[2]) DrawRectangle(0, 0, 1280, 720, BLACK);
             registrationPanelA.Draw(10.0f, 228.0f, BOTTOMLEFT, 1);
             registrationPanelB.Draw((float)(GetScreenWidth() - 621.0f), 228.0f, TOPRIGHT, 1);
             registrationBar.Draw(1);
