@@ -68,6 +68,4 @@ enum Screen{
     REGISTRATION_SCREEN,
     DEVELOPER_INFO
 };
-
-
 #endif

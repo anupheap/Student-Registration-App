@@ -403,22 +403,17 @@ int main(){
                     student.setID(IDBuffer);
                     student.setDisplayName();
 
-                    // Build file path and check if student exists
                     std::string fullPath = buildPath(info.studentFileName);
                     std::ifstream existingFile(fullPath);
 
                     if (existingFile.is_open()) {
-                        // File exists - try to load it
                         try {
                             existingFile >> data;
                             existingFile.close();
 
-                            // Check if ID matches
                             if (data.contains("id") && data["id"] == IDBuffer) {
-                                // Returning student - load their info and skip to main menu
                                 TraceLog(LOG_INFO, "Returning student detected: %s", info.studentFileName);
                                 
-                                // Load semester and year from JSON
                                 if (data.contains("semester") && data.contains("year")) {
                                     info.studentSemester = data["semester"].get<int>();
                                     info.studentYear = data["year"].get<int>();
@@ -440,13 +435,12 @@ int main(){
                         }
                     } 
                     else {
-                        // File doesn't exist - check if ID is used elsewhere
+                        
                         if (isIDDuplicate(IDBuffer)) {
                             strcpy(errorMessageForID, "[ERROR] ID already registered to another name!");
                             TraceLog(LOG_WARNING, "ID collision: %s already exists", IDBuffer);
                         } 
                         else {
-                            // New student - proceed to semester screen
                             TraceLog(LOG_INFO, "New student: %s", info.studentFileName);
                             setStudentInfo();
                             currentScreen = SEMESTER_SCREEN;
@@ -561,12 +555,12 @@ int main(){
                 }
 
                 float startY = 210.0f;
-                float col1   = 100.0f;
-                float col2   = 650.0f;
+                float col1 = 100.0f;
+                float col2 = 650.0f;
 
                 string trimStr = "Trimester: " + to_string(viewData.value("semester", 0)) + "F-" + to_string(viewData.value("year", 0));
                 string nameStr = "Student Name: " + viewData.value("name", "—");
-                string idStr   = "Student ID: "   + viewData.value("id",   "—");
+                string idStr = "Student ID: " + viewData.value("id", "—");
 
                 DrawTextEx(font.torus30, text.viewOrPrintText, text.viewOrPrintTextPos, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
@@ -574,13 +568,13 @@ int main(){
                 DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
                 DrawTextEx(font.torus30, trimStr.c_str(), {col1, startY}, 30, 3, white); startY += 38;
                 DrawTextEx(font.torus30, nameStr.c_str(), {col1, startY}, 30, 3, white); startY += 38;
-                DrawTextEx(font.torus30, idStr.c_str(),   {col1, startY}, 30, 3, white); startY += 50;
+                DrawTextEx(font.torus30, idStr.c_str(), {col1, startY}, 30, 3, white); startY += 50;
 
-                DrawTextEx(font.torus30, "Unit",     {col1, startY}, 30, 3, blueColor);
+                DrawTextEx(font.torus30, "Unit", {col1, startY}, 30, 3, blueColor);
                 DrawTextEx(font.torus30, "Grouping", {col2, startY}, 30, 3, blueColor);
                 startY += 36;
 
-                const char* groups[]      = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
+                const char* groups[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
                 const char* groupLabels[] = {"1E1", "1E2", "1E3", "1E4"};
 
                 bool anyRegistrations = false;
@@ -589,7 +583,7 @@ int main(){
                     for(auto& unit : viewData[groups[g]]){
                         anyRegistrations = true;
                         DrawTextEx(font.torus30, unit.get<string>().c_str(), {col1, startY}, 30, 3, white);
-                        DrawTextEx(font.torus30, groupLabels[g],             {col2, startY}, 30, 3, white);
+                        DrawTextEx(font.torus30, groupLabels[g], {col2, startY}, 30, 3, white);
                         startY += 34;
                     }
                 }
