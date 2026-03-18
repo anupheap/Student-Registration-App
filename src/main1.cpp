@@ -272,177 +272,128 @@ int main(){
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
 
-            if (next.isPressed())
-            {
+            if (next.isPressed()){
+                // Validate first name
                 switch(nameInputValidation(firstNameBuffer)){
                     case(vs::IS_EMPTY):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name is Empty!");
                         firstNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_PRECEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your First name!");
                         firstNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_PROCEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your First Name!");
                         firstNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_WHITESPACE):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tPlease remove the additional whitespace(s) from your First Name!");
                         firstNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_NUMBERS):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has a Number(s)!");
                         firstNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_SYMBOLS):
-                    {
                         strcpy(errorMessageForFirstName, "[ERROR]\tYour First Name has an Invalid Character(s)!");
                         firstNameValidity = false;
                         break;
-                    }
                     default:
-                    {
                         firstNameValidity = true;
                         strcpy(errorMessageForFirstName, "\0");
-                    }
                 }
 
+                // Validate middle name
                 switch(nameInputValidation(middleNameBuffer)){
                     case(vs::HAS_PRECEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForMiddleName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Middle Name!");
                         middleNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_PROCEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the Proceding whitespace(s) from your Middle Name!");
                         middleNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_WHITESPACE):
-                    {
                         strcpy(errorMessageForMiddleName, "[ERROR]\tPlease remove the additional whitespace(s)!");
                         middleNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_NUMBERS):
-                    {
                         strcpy(errorMessageForMiddleName, "[ERROR]\tText has numbers!");
                         middleNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_SYMBOLS):
-                    {
                         strcpy(errorMessageForMiddleName, "[ERROR]\tInvalid Character(s)!");
                         middleNameValidity = false;
                         break;
-                    }
                     default:
-                    {
                         middleNameValidity = true;
                         strcpy(errorMessageForMiddleName, "\0");
-                    }
                 }
 
+                // Validate last name
                 switch(nameInputValidation(lastNameBuffer)){
                     case(vs::IS_EMPTY):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name is Empty!");
                         lastNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_PRECEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tPlease Remove the Preceding Whitespace(s) from your Last name!");
                         lastNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_PROCEDING_WHITESPACE):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the Proceding Whitespace(s) from your Last Name!");
                         lastNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_WHITESPACE):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tPlease remove the additional whitespace(s) from your Last Name!");
                         lastNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_NUMBERS):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has a Number(s)!");
                         lastNameValidity = false;
                         break;
-                    }
                     case(vs::HAS_SYMBOLS):
-                    {
                         strcpy(errorMessageForLastName, "[ERROR]\tYour Last Name has an Invalid Character(s)!");
                         lastNameValidity = false;
                         break;
-                    }
                     default:
-                    {
                         lastNameValidity = true;
                         strcpy(errorMessageForLastName, "\0");
-                    }
                 }
 
+                // Validate ID
                 switch(IDInputValidation(IDBuffer)){
                     case(vs::INVALID_ID_FORMAT):
-                    {
                         strcpy(errorMessageForID, "[ERROR]\tYour ID should be in 7000XXXXX format!");
                         IDValidity = false;
                         break;
-                    }
                     case(vs::IS_EMPTY):
-                    {
                         strcpy(errorMessageForID, "[ERROR]\tYour ID is Empty!");
                         IDValidity = false;
                         break;
-                    }
                     case(vs::INSUFFICIENT_CHARACTERS):
-                    {
                         strcpy(errorMessageForID, "[ERROR]\tYour ID is not exactly 9 digits!");
                         IDValidity = false;
                         break;
-                    }
                     case(vs::HAS_WHITESPACE):
-                    {
                         strcpy(errorMessageForID, "[ERROR]\tYour ID should not have a Whitespace(s)!");
                         IDValidity = false;
                         break;
-                    }
                     case(vs::HAS_ALPHA_AND_OR_SYMBOLS):
-                    {
                         strcpy(errorMessageForID, "[ERROR]\tYour ID should only contain Digits!");
                         IDValidity = false;
                         break;
-                    }
                     default:
-                    {
                         IDValidity = true;
                         strcpy(errorMessageForID, "\0");
-                    }
                 }
-                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) {
-                    // 1. ALWAYS set the filename first based on input
+                
+                // If all validations pass
+                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) 
+                {
+                    // Set student name and filename
                     if (strlen(middleNameBuffer) == 0) {
-                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
-                { 
-                    if(strlen(middleNameBuffer) == 0){
                         student.setName(firstNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, lastNameBuffer);
                     } else {
@@ -452,47 +403,58 @@ int main(){
                     student.setID(IDBuffer);
                     student.setDisplayName();
 
-                    // 2. Check if this specific student file already exists
+                    // Build file path and check if student exists
                     std::string fullPath = buildPath(info.studentFileName);
                     std::ifstream existingFile(fullPath);
 
                     if (existingFile.is_open()) {
+                        // File exists - try to load it
                         try {
                             existingFile >> data;
                             existingFile.close();
 
-                            // 3. If Name exists and ID matches -> Returning Student (SKIP)
+                            // Check if ID matches
                             if (data.contains("id") && data["id"] == IDBuffer) {
-                                TraceLog(LOG_INFO, "Returning student detected. Skipping to Main Menu.");
-                                currentScreen = MAIN_MENU; 
+                                // Returning student - load their info and skip to main menu
+                                TraceLog(LOG_INFO, "Returning student detected: %s", info.studentFileName);
+                                
+                                // Load semester and year from JSON
+                                if (data.contains("semester") && data.contains("year")) {
+                                    info.studentSemester = data["semester"].get<int>();
+                                    info.studentYear = data["year"].get<int>();
+                                }
+                                
+                                setStudentInfo();
+                                currentScreen = MAIN_MENU;
                             } 
                             else {
-                                // Name exists but ID is different? 
-                                // This could be a different student with the same name.
+                                // Name exists but ID is different
                                 strcpy(errorMessageForID, "[ERROR] Name exists but ID mismatch!");
+                                TraceLog(LOG_WARNING, "Name collision: %s with different ID", info.studentFileName);
                             }
-                        } catch (...) {
+                        } 
+                        catch (const std::exception& e) {
+                            TraceLog(LOG_ERROR, "Error reading existing file: %s", e.what());
                             existingFile.close();
+                            currentScreen = SEMESTER_SCREEN;
                         }
                     } 
                     else {
-                        // 4. File doesn't exist. Is this ID being used by SOMEONE ELSE?
+                        // File doesn't exist - check if ID is used elsewhere
                         if (isIDDuplicate(IDBuffer)) {
                             strcpy(errorMessageForID, "[ERROR] ID already registered to another name!");
-                        } else {
-                            // 5. Truly a new student -> Go to Semester Screen
+                            TraceLog(LOG_WARNING, "ID collision: %s already exists", IDBuffer);
+                        } 
+                        else {
+                            // New student - proceed to semester screen
+                            TraceLog(LOG_INFO, "New student: %s", info.studentFileName);
                             setStudentInfo();
                             currentScreen = SEMESTER_SCREEN;
                         }
                     }
                 }
             }
-            DrawText(errorMessageForFirstName, 10, errorMessageForFirstNamePosY, 20, RED);
-            DrawText(errorMessageForMiddleName, 10, errorMessageForMiddleNamePosY, 20, RED);
-            DrawText(errorMessageForLastName, 10, errorMessageForLastNamePosY, 20, RED);
-            DrawText(errorMessageForID, 10, errorMessageForIDPosY, 20, RED);
         }
-
 
 
         if (currentScreen == SEMESTER_SCREEN)
@@ -654,38 +616,39 @@ int main(){
 
 
         if (currentScreen == DEVELOPER_INFO){
-                DrawTextEx(font.fira12, fileData, text.artPos, text.artScale, text.spacing, white);
+            DrawTextEx(font.fira12, fileData, text.artPos, text.artScale, text.spacing, white);
 
-                float startY = 350.0f;
-                float col1   = 50.0f;
-                float col2   = 450.0f;
-                float col3   = 700.0f;
+            float startY = 350.0f;
+            float col1   = 50.0f;
+            float col2   = 450.0f;
+            float col3   = 700.0f;
 
-                DrawTextEx(font.torus20, "Group 1E1-A",  {col1, startY}, 20, 3, greenColor); startY += 42;
+            DrawTextEx(font.torus20, "Group 1E1-A",  {col1, startY}, 20, 3, greenColor); startY += 42;
 
-                DrawTextEx(font.torus20, "Ung Phearakleap",  {col1, startY}, 20, 3, white);
-                DrawTextEx(font.torus20, "P20250001",         {col2, startY}, 20, 3, baseTextColor);
-                DrawTextEx(font.torus20, "Core system, Login, registration, JSON",  {col3, startY}, 20, 3, baseTextColor);
-                startY += 36;
+            DrawTextEx(font.torus20, "Ung Phearakleap",  {col1, startY}, 20, 3, white);
+            DrawTextEx(font.torus20, "P20250001",         {col2, startY}, 20, 3, baseTextColor);
+            DrawTextEx(font.torus20, "Core system, Login, registration, JSON",  {col3, startY}, 20, 3, baseTextColor);
+            startY += 36;
 
-                DrawTextEx(font.torus20, "Buntong Anupheap", {col1, startY}, 20, 3, white);
-                DrawTextEx(font.torus20, "P20250055",         {col2, startY}, 20, 3, baseTextColor);
-                DrawTextEx(font.torus20, "View/Print page, Developer Info screen",  {col3, startY}, 20, 3, baseTextColor);
-                startY += 36;
+            DrawTextEx(font.torus20, "Buntong Anupheap", {col1, startY}, 20, 3, white);
+            DrawTextEx(font.torus20, "P20250055",         {col2, startY}, 20, 3, baseTextColor);
+            DrawTextEx(font.torus20, "View/Print page, Developer Info screen",  {col3, startY}, 20, 3, baseTextColor);
+            startY += 36;
 
-                DrawTextEx(font.torus20, "Pheng Sopheak",    {col1, startY}, 20, 3, white);
-                DrawTextEx(font.torus20, "P20250002",         {col2, startY}, 20, 3, baseTextColor);
-                DrawTextEx(font.torus20, "Flowchart",                                {col3, startY}, 20, 3, baseTextColor);
-                startY += 56;
+            DrawTextEx(font.torus20, "Pheng Sopheak",    {col1, startY}, 20, 3, white);
+            DrawTextEx(font.torus20, "P20250002",         {col2, startY}, 20, 3, baseTextColor);
+            DrawTextEx(font.torus20, "Flowchart",                                {col3, startY}, 20, 3, baseTextColor);
+            startY += 56;
 
-                DrawTextEx(font.torus30, "Press any key or click to exit...", {col1, startY}, 28, 3, baseTextColor);
+            DrawTextEx(font.torus30, "Press any key or click to exit...", {col1, startY}, 28, 3, baseTextColor);
 
-                if(IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    CloseWindow();
-    }
+            if(IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                CloseWindow();
+            }
 
         }
         EndDrawing();
     }
+    
     return 0;
 }
