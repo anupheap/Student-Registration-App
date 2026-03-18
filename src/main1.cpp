@@ -163,14 +163,15 @@ int main(){
     bool IDValidity = false;
     bool yearValidity = false;
     Color white = WHITE;
+    Color gray = {211, 211, 211, 255};
     Color purple = {140, 102, 255, 255};
     Color backgroundColor = {49, 46, 56, 255};
     Color baseColor = {36, 34, 43, 255};
     Color baseTextColor = {150, 140, 171, 255};
     Color focusedTextColor = {204, 193, 230, 255};
+    Color transparentBlack = {10, 10, 10, 100};
     Color greenColor = {172, 247, 98, 255};
     Color blueColor  = {102, 204, 255, 255};
-
     Color viewOrPrintBarColor = {102, 204, 255, 255};
     Color registrationBarColor = {172, 247, 98, 255};
     int semesterSelection = 0;
@@ -436,18 +437,54 @@ int main(){
                         strcpy(errorMessageForID, "\0");
                     }
                 }
+                if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) {
+                    // 1. ALWAYS set the filename first based on input
+                    if (strlen(middleNameBuffer) == 0) {
                 if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
                 { 
                     if(strlen(middleNameBuffer) == 0){
                         student.setName(firstNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, lastNameBuffer);
-                    } else{
+                    } else {
                         student.setName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, middleNameBuffer, lastNameBuffer);
                     }
                     student.setID(IDBuffer);
                     student.setDisplayName();
-                    currentScreen = SEMESTER_SCREEN;
+
+                    // 2. Check if this specific student file already exists
+                    std::string fullPath = buildPath(info.studentFileName);
+                    std::ifstream existingFile(fullPath);
+
+                    if (existingFile.is_open()) {
+                        try {
+                            existingFile >> data;
+                            existingFile.close();
+
+                            // 3. If Name exists and ID matches -> Returning Student (SKIP)
+                            if (data.contains("id") && data["id"] == IDBuffer) {
+                                TraceLog(LOG_INFO, "Returning student detected. Skipping to Main Menu.");
+                                currentScreen = MAIN_MENU; 
+                            } 
+                            else {
+                                // Name exists but ID is different? 
+                                // This could be a different student with the same name.
+                                strcpy(errorMessageForID, "[ERROR] Name exists but ID mismatch!");
+                            }
+                        } catch (...) {
+                            existingFile.close();
+                        }
+                    } 
+                    else {
+                        // 4. File doesn't exist. Is this ID being used by SOMEONE ELSE?
+                        if (isIDDuplicate(IDBuffer)) {
+                            strcpy(errorMessageForID, "[ERROR] ID already registered to another name!");
+                        } else {
+                            // 5. Truly a new student -> Go to Semester Screen
+                            setStudentInfo();
+                            currentScreen = SEMESTER_SCREEN;
+                        }
+                    }
                 }
             }
             DrawText(errorMessageForFirstName, 10, errorMessageForFirstNamePosY, 20, RED);
@@ -494,12 +531,14 @@ int main(){
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
-            
+            DrawTextEx(font.torus30, text.welcomeMainMenuText1, text.welcomeMainMenuText1Pos, text.subtitleScale, text.spacing, gray);
+            DrawTextEx(font.torus30, text.welcomeMainMenuText2, text.welcomeMainMenuText2Pos, text.subtitleScale, text.spacing, gray);
             if(toggleState[0]){
                 hoverAnyButton = false;
                 currentScreen = DEVELOPER_INFO;
                 SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             }
+            if (toggleState[1] || toggleState[2]) DrawRectangle(0, 0, 1280, 720, transparentBlack);
             registrationPanelA.Draw(10.0f, 228.0f, BOTTOMLEFT, 1);
             registrationPanelB.Draw((float)(GetScreenWidth() - 621.0f), 228.0f, TOPRIGHT, 1);
             registrationBar.Draw(1);
@@ -510,15 +549,31 @@ int main(){
                 Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.registrationTextPos.y + 30)};
                 DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                
+                bool isProgFull = (getAvailableSlots("Programming", data["year"]) <= 0);
+                bool isPhyFull = (getAvailableSlots("Physics I", data["year"]) <= 0);
+                bool isMathFull = (getAvailableSlots("Mathematics II", data["year"]) <= 0);
+                bool isWritingFull = (getAvailableSlots("Writing and Researching skills", data["year"]) <= 0);
+
+
+                bool progLocked = isUnitRegistered("Programming", data) || isProgFull;
+                bool physLocked = isUnitRegistered("Physics I", data) || isPhyFull;
+                bool mathLocked = isUnitRegistered("Mathematics II", data) || isMathFull;
+                bool writLocked = isUnitRegistered("Writing And Researching Skills", data) || isWritingFull;
+
+                bool selectAllLocked = (progLocked || physLocked || mathLocked || writLocked);
+
                 grouping1.Draw((float)280.0f, (float)365.0f, "1E1", 0, registrations.toggleStateForGroupings, font);
                 grouping2.Draw((float)277.0f, (float)425.0f, "1E2", 1, registrations.toggleStateForGroupings, font);
                 grouping3.Draw((float)274.0f, (float)485.0f, "1E3", 2, registrations.toggleStateForGroupings, font);
                 grouping4.Draw((float)271.0f, (float)545.0f, "1E4", 3, registrations.toggleStateForGroupings, font);
-                programming.Draw((float)700.0f, (float)365.0f, "Programming", 0, registrations.toggleStateForUnits, font);
-                physics.Draw((float)697.0f, (float)410.0f, "Physics I", 1, registrations.toggleStateForUnits, font);
-                mathematics.Draw((float)694.0f, (float)455.0f, "Mathematics II", 2, registrations.toggleStateForUnits, font);
-                writingNResearchSkills.Draw((float)691.0f, (float)500.0f, "Writing And Researching Skills", 3, registrations.toggleStateForUnits, font);
-                selectAll.Draw((float)688.0f, (float)545.0f, "Select All Units", 4, registrations.toggleStateForUnits, font);
+
+                programming.Draw(700.0f, 365.0f, "Programming", 0, registrations.toggleStateForUnits, font, progLocked);
+                physics.Draw(697.0f, 410.0f, "Physics I", 1, registrations.toggleStateForUnits, font, physLocked);
+                mathematics.Draw(694.0f, 455.0f, "Mathematics II", 2, registrations.toggleStateForUnits, font, mathLocked);
+                writingNResearchSkills.Draw(691.0f, 500.0f, "Writing And Researching Skills", 3, registrations.toggleStateForUnits, font, writLocked);
+                
+                selectAll.Draw(688.0f, 545.0f, "Select All Units", 4, registrations.toggleStateForUnits, font, selectAllLocked);
                 submitButton.Draw({GetScreenWidth()/2.0f, 660.0f}, 0.35f, 0);
                 if(submitButton.isPressed()){
                     setRegistration(0);

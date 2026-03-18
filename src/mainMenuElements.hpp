@@ -19,6 +19,49 @@ inline std::string getBaseDir(){
 inline std::string buildPath(const char* relative){
     return getBaseDir() + relative;
 }
+inline bool isIDDuplicate(const char* inputID) {
+    std::string studentsDir = buildPath("records/students/");
+    std::error_code ec;
+
+    // directory_iterator with 'ec' prevents a crash if the folder is missing
+    auto it = std::filesystem::directory_iterator(studentsDir, ec);
+    if (ec) return false; 
+
+    for (const auto& entry : it) {
+        if (entry.path().extension() == ".json") {
+            std::ifstream f(entry.path());
+            if (f.is_open()) {
+                nlohmann::ordered_json existingData;
+                try {
+                    f >> existingData; // Parse the file
+                    
+                    // Check if the "id" field matches the one being entered
+                    if (existingData.contains("id") && existingData["id"] == inputID) {
+                        return true; // Match found!
+                    }
+                } catch (...) { 
+                    // If a file is corrupted, skip it instead of crashing
+                    continue; 
+                }
+            }
+        }
+    }
+    return false;
+}
+inline bool isUnitRegistered(const char* unitName, nlohmann::ordered_json& data) {
+    if (data.empty()) return false;
+    try {
+        for (auto& [key, value] : data.items()) {
+            if (value.is_array()) { 
+                for (auto& item : value) {
+                    // Check if it's a string AND matches
+                    if (item.is_string() && item.get<std::string>() == unitName) return true;
+                }
+            }
+        }
+    } catch (...) { return false; }
+    return false;
+}
 
 inline void recalculateSlots(int year){
     const char* units[] = {"Programming", "Physics I", "Mathematics II", "Writing And Researching Skills"};
@@ -28,9 +71,17 @@ inline void recalculateSlots(int year){
     for(auto& u : units) availableSlots[u] = MAX_SLOTS;
 
     std::string studentsDir = buildPath("records/students/");
-    std::filesystem::create_directories(studentsDir);
+    std::error_code ec; // SILENT ERROR CHECK
+    
+    // Check if directory exists before iterating
+    if (!std::filesystem::exists(studentsDir, ec)) {
+        std::filesystem::create_directories(studentsDir, ec);
+    }
 
-    for(const auto& entry : std::filesystem::directory_iterator(studentsDir)){
+    auto it = std::filesystem::directory_iterator(studentsDir, ec);
+    if (ec) return; // Exit quietly if folder is still missing
+
+    for(const auto& entry : it){
         if(entry.path().extension() != ".json") continue;
 
         std::ifstream f(entry.path());
@@ -39,20 +90,22 @@ inline void recalculateSlots(int year){
         ordered_json studentData;
         try{ 
             f >> studentData;
-        }catch(...){
-            continue;
-        }
+        }catch(...){ continue; }
 
         if(!studentData.contains("year") || studentData["year"] != year) continue;
 
         const char* groups[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
         for(auto& group : groups){
-            if(!studentData.contains(group)) continue;
+            if(!studentData.contains(group) || !studentData[group].is_array()) continue;
+            
             for(auto& registeredUnit : studentData[group]){
-                std::string unitStr = registeredUnit.get<std::string>();
-                if(availableSlots.contains(unitStr)){
-                    int current = availableSlots[unitStr].get<int>();
-                    if(current > 0) availableSlots[unitStr] = current - 1;
+                // SAFETY: Check if the unit is actually a string before converting
+                if (registeredUnit.is_string()) {
+                    std::string unitStr = registeredUnit.get<std::string>();
+                    if(availableSlots.contains(unitStr)){
+                        int current = availableSlots[unitStr].get<int>();
+                        if(current > 0) availableSlots[unitStr] = current - 1;
+                    }
                 }
             }
         }
@@ -73,6 +126,49 @@ inline void recalculateSlots(int year){
             TraceLog(LOG_ERROR, "FAILED TO WRITE SLOT FILE: %s", slotPath.c_str());
         }
     }
+}
+inline int getAvailableSlots(const char* unitName, int year) {
+    const int MAX_SLOTS = 15;
+    int takenSlots = 0;
+    std::error_code ec;
+    
+    std::string studentsDir = buildPath("records/students/");
+    auto it = std::filesystem::directory_iterator(studentsDir, ec);
+    if (ec) return MAX_SLOTS;
+
+    for (const auto& entry : it) {
+        if (entry.path().extension() != ".json") continue;
+
+        std::ifstream f(entry.path());
+        if (!f.is_open()) continue;
+
+        nlohmann::ordered_json studentData;
+        
+        try {
+            f >> studentData;
+
+            if (studentData.contains("year") && studentData["year"] == year) {
+                const char* groups[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
+                
+                for (auto& group : groups) {
+                    if (studentData.contains(group) && studentData[group].is_array()) {
+                        for (auto& regUnit : studentData[group]) {
+                            if (regUnit == unitName) {
+                                takenSlots++;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+        catch (...) {
+            TraceLog(LOG_WARNING, "Corrupted file ignored during slot count: %s", entry.path().string().c_str());
+            continue; 
+        }
+    }
+
+    return MAX_SLOTS - takenSlots;
 }
 
 
@@ -137,28 +233,44 @@ class CheckBoxesForGroupings{
 class CheckBoxesForUnits{
     public:
         CheckBoxesForUnits() = default;
-        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, bool* toggleStateRadio, textFonts &font){
+
+        bool Draw(float xpos, float ypos, const char* text, int toggleLabel, bool* toggleStateRadio, textFonts &font, bool isLocked){
             Rectangle collisionBoxForCheckBoxes = {
                 xpos, ypos,
                 45 + MeasureTextEx(font.torus30, text, 30, 3).x, 30
             };
+            
             Color colorState;
             Color mmYesGREEEEEEN = {172, 247, 98, 255};
+            Color lockedGray = {100, 100, 100, 255};
+
             bool isHovering = CheckCollisionPointRec(GetMousePosition(), collisionBoxForCheckBoxes);
-            bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
-            if(clicked){
-                toggleStateRadio[toggleLabel] = !toggleStateRadio[toggleLabel];
-                if(toggleStateRadio[4]){
-                    for(int i = 0; i < 5; i++) toggleStateRadio[i] = (i == toggleLabel);
-                }
-            } else if(isHovering || toggleStateRadio[toggleLabel]){
-                colorState = mmYesGREEEEEEN;
+            
+            if (isLocked) {
+                colorState = lockedGray;
             } else {
-                colorState = WHITE;
+                bool clicked = (isHovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT));
+                if(clicked){
+                    // SELECT ALL CONDITION
+                    if (toggleLabel == 4) {
+                        bool anyIndividual = false;
+                        for(int i = 0; i < 4; i++) if(toggleStateRadio[i]) anyIndividual = true;
+                        if(!anyIndividual) toggleStateRadio[4] = !toggleStateRadio[4];
+                    } else {
+                        toggleStateRadio[toggleLabel] = !toggleStateRadio[toggleLabel];
+                        if(toggleStateRadio[toggleLabel]) toggleStateRadio[4] = false;
+                    }
+                } 
+                
+                if(isHovering || toggleStateRadio[toggleLabel]) colorState = mmYesGREEEEEEN;
+                else colorState = WHITE;
             }
+
             DrawRectangleLines(xpos, ypos, 30, 30, colorState);
             DrawTextEx(font.torus30, text, {xpos + 40, ypos}, 30, 3, colorState);
-            if(toggleStateRadio[toggleLabel]) DrawRectangle(xpos+5, ypos+5, 20, 20, colorState);
+
+            if(toggleStateRadio[toggleLabel] || isLocked) DrawRectangle(xpos + 5, ypos + 5, 20, 20, colorState);
+            
             return toggleStateRadio[toggleLabel];
         }
 };
@@ -215,47 +327,28 @@ inline void Panels::Draw(float xpos, float ypos, originDirection selectedDirecti
     DrawTextureEx(registrationPanel, {originPos.x + offsetX, originPos.y + offsetY}, 0, 1, WHITE);
 }
 
-void setRegistration(int groupingNumber){
+void setRegistration(int groupingNumber) {
     extern ordered_json data;
     const char* registrationData[] = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
     const char* units[] = {"Programming", "Physics I", "Mathematics II", "Writing And Researching Skills"};
 
-    if(!registrations.toggleStateForGroupings[groupingNumber]) return;
+    if (groupingNumber < 0 || groupingNumber > 3) return;
+    if (!registrations.toggleStateForGroupings[groupingNumber]) return;
 
-    for(int i = 0; i < 5; i++){
-        if(registrations.toggleStateForUnits[4]){
-            for(auto& unitSelection : units){
-                bool duplicate = false;
-                for(auto& [key, value] : data.items()){
-                    for(auto& arr : value){
-                        if(arr == unitSelection){
-                            TraceLog(LOG_WARNING, "\"%s\" already in \"%s\"", unitSelection, key.c_str());
-                            duplicate = true;
-                        }
-                    }
-                }
-                if(!duplicate){
-                    data[registrationData[groupingNumber]].push_back(unitSelection);
-                    TraceLog(LOG_INFO, "\"%s\" added to \"%s\"", unitSelection, registrationData[groupingNumber]);
-                }
-            }
-            break;
-        }
-
-        if(!registrations.toggleStateForUnits[i]) continue;
-
-        bool duplicate = false;
-        for(auto& [key, value] : data.items()){
-            for(auto& arr : value){
-                if(arr == units[i]){
-                    TraceLog(LOG_WARNING, "\"%s\" already in \"%s\"", units[i], key.c_str());
-                    duplicate = true;
-                }
+    if (registrations.toggleStateForUnits[4]) {
+        for (int i = 0; i < 4; i++) {
+            if (!isUnitRegistered(units[i], data)) {
+                data[registrationData[groupingNumber]].push_back(units[i]);
             }
         }
-        if(!duplicate){
-            data[registrationData[groupingNumber]].push_back(units[i]);
-            TraceLog(LOG_INFO, "\"%s\" added to \"%s\"", units[i], registrationData[groupingNumber]);
+    } 
+    else {
+        for (int i = 0; i < 4; i++) {
+            if (registrations.toggleStateForUnits[i]) {
+                if (!isUnitRegistered(units[i], data)) {
+                    data[registrationData[groupingNumber]].push_back(units[i]);
+                }
+            }
         }
     }
 }
