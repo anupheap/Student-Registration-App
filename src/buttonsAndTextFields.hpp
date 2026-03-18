@@ -158,7 +158,6 @@ bool Button::Draw(Vector2 buttonPos, float scale, float rot)
     colBoxWidth = (float)textureStandalone.width * currentScale;
     colBoxHeight = (float)textureStandalone.height * currentScale;
     
-    //DrawRectangleRec(collisionBox, RED);
     collisionBoxPosition = {(float)buttonPos.x - (float)origin.x - YOffset, (float)buttonPos.y - (float)origin.y - YOffset}; 
 
     Texture2D currentButtonTexture = textureStandalone;
