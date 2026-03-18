@@ -448,6 +448,10 @@ int main(){
                     }
                 }
             }
+            DrawText(errorMessageForFirstName, 10, 610, 20, RED);
+            DrawText(errorMessageForMiddleName, 10, 630, 20, RED);
+            DrawText(errorMessageForLastName, 10, 650, 20, RED);
+            DrawText(errorMessageForID, 10, 670, 20, RED);
         }
 
 
