@@ -15,6 +15,7 @@ class textFonts{
         Font torus30;
         Font textboxTorus30;
         Font fira12;
+        Font torus20;
         
         textFonts(){
             torus50 = LoadFontEx(torusTitlePath, 50, 0, 0);
@@ -26,7 +27,9 @@ class textFonts{
             textboxTorus30 = LoadFontEx(torusInputPath, 30, 0, 0);
             SetTextureFilter(textboxTorus30.texture, TEXTURE_FILTER_BILINEAR);
 
-            
+            torus20 = LoadFontEx(torusTitlePath, 20, 0, 0);
+            SetTextureFilter(torus20.texture, TEXTURE_FILTER_BILINEAR);
+
             fira12 = LoadFontEx(firaPath, 12, 0, 0);
             SetTextureFilter(fira12.texture, TEXTURE_FILTER_POINT);
 
@@ -35,6 +38,7 @@ class textFonts{
             UnloadFont(torus50);
             UnloadFont(torus30);
             UnloadFont(fira12);
+            UnloadFont(torus20);
         }
 };
 
@@ -47,6 +51,7 @@ class texts{
         float titleScale = 50.0f;
         float subtitleScale = 30.0f;
         float artScale = 12.0f;
+
     //Text Values
         char studentLoginText[14] = "STUDENT LOGIN";
         char firstNameText[12] = "First Name:";
@@ -56,13 +61,11 @@ class texts{
         char semesterDetailsText[17] = "SEMESTER DETAILS";
         char semesterText[16] = "Semester (1-3):";
         char yearText[6] = "Year:";
-
-        //testing
         char mainMenuText[10] = "Main Menu";
         char registrationText[32] = "Welcome to the Grouping Module,";
         char viewOrPrintText[41] = "Welcome the the Groupings Record Module,";
-
         char creditsTitleText[8]= "Credits";    
+
     //Text Scales
         Vector2 getStudentLoginTextScale;
         Vector2 getFirstNameTextScale;
@@ -72,13 +75,12 @@ class texts{
         Vector2 getSemesterDetailsTextScale;
         Vector2 getSemesterTextScale;
         Vector2 getYearTextScale;
-
-        // testing
         Vector2 getMainMenuTextScale;
         Vector2 getRegistrationTextScale;
         Vector2 getViewOrPrintTextScale;
         Vector2 getCreditsTitleTextScale;
         Vector2 getDeveloperTitleTextScale;
+
     //Text Position
         Vector2 studentLoginTextPos;
         Vector2 firstNameTextPos;
@@ -88,9 +90,6 @@ class texts{
         Vector2 semesterDetailsTextPos;
         Vector2 semesterTextPos;
         Vector2 yearTextPos;
-        
-
-        //testing 
         Vector2 mainMenuTextPos;
         Vector2 registrationTextPos;
         Vector2 viewOrPrintTextPos;
@@ -109,8 +108,6 @@ class texts{
         getSemesterDetailsTextScale = MeasureTextEx(font.torus50, semesterDetailsText, titleScale, spacing);
         getSemesterTextScale = MeasureTextEx(font.torus30, semesterText, subtitleScale, spacing);
         getYearTextScale = MeasureTextEx(font.torus30, yearText, subtitleScale, spacing);
-        
-        //testing 
         getMainMenuTextScale = MeasureTextEx(font.torus30, mainMenuText, titleScale, spacing);
         getRegistrationTextScale = MeasureTextEx(font.torus30, registrationText, subtitleScale, spacing);
         getViewOrPrintTextScale = MeasureTextEx(font.torus30, viewOrPrintText, subtitleScale, spacing);
@@ -149,8 +146,6 @@ class texts{
             semesterTextPos.x + getSemesterTextScale.x - getYearTextScale.x, 
             semesterTextPos.y + 130
         };
-
-        //testing
         mainMenuTextPos = {
             (GetScreenWidth()/2) - (getMainMenuTextScale.x/2),
             (GetScreenHeight()/5) - (getMainMenuTextScale.y/2)
@@ -168,8 +163,8 @@ class texts{
             (GetScreenHeight()/5) - (getCreditsTitleTextScale.y/2)
         };
         artPos = {
-            (GetScreenWidth() / 2.0f) - (getArtScale.x / 2.0f)-220, // Center horizontally
-            CreditsTitleTextPos.y + getCreditsTitleTextScale.y-100 // Position 20px below "Credits"
+            (GetScreenWidth() / 2.0f) - (getArtScale.x / 2.0f)-220, 
+            CreditsTitleTextPos.y + getCreditsTitleTextScale.y-100 
         };
     }
 };

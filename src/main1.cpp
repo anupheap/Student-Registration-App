@@ -11,14 +11,13 @@
 #include "nlohmann/json.hpp"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace nlohmann;
 using namespace std;
 using vs = ValiditySafeguards;
 
 
-
-// Main Program
 int main(){
     extern ordered_json data;
 
@@ -61,10 +60,14 @@ int main(){
         ImageResizeNN(&logo, 256, 256);
 
     // Initialize Classes, Buttons, Text input Boxes and Game Screen
-        char* fileData = LoadFileText("src\\art.txt"); //loads ascii art file
+
         Student student;
         Screen currentScreen = SCREEN_LOGIN;
         textFonts font;
+
+        //loads ascii art file
+        string artPath = buildPath("assets\\art.txt");
+        char* fileData = LoadFileText(artPath.c_str()); 
         texts text(font, fileData);
 
         //"NEXT" Button
@@ -165,7 +168,9 @@ int main(){
     Color baseColor = {36, 34, 43, 255};
     Color baseTextColor = {150, 140, 171, 255};
     Color focusedTextColor = {204, 193, 230, 255};
-    
+    Color greenColor = {172, 247, 98, 255};
+    Color blueColor  = {102, 204, 255, 255};
+
     Color viewOrPrintBarColor = {102, 204, 255, 255};
     Color registrationBarColor = {172, 247, 98, 255};
     int semesterSelection = 0;
@@ -185,6 +190,9 @@ int main(){
     CheckBoxesForUnits mathematics;
     CheckBoxesForUnits writingNResearchSkills;
     CheckBoxesForUnits selectAll;
+
+    ordered_json viewData;
+    bool viewDataLoaded = false;
 
 
 
@@ -216,7 +224,8 @@ int main(){
         GuiSetStyle(DROPDOWNBOX, TEXT_COLOR_NORMAL, ColorToInt(baseTextColor));
         bool hoverAnyButton = false;
         bool anyGroupingSelected = false;
-        //====LOGIN-SCREEN====
+
+
         if (currentScreen == SCREEN_LOGIN)
         {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -428,7 +437,7 @@ int main(){
                     }
                 }
                 if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity)
-                {
+                { 
                     if(strlen(middleNameBuffer) == 0){
                         student.setName(firstNameBuffer, lastNameBuffer);
                         student.setFileName(firstNameBuffer, lastNameBuffer);
@@ -438,28 +447,6 @@ int main(){
                     }
                     student.setID(IDBuffer);
                     student.setDisplayName();
-                    setStudentInfo();
-                    TraceLog(LOG_INFO, info.studentFileName);
-                    ifstream currentStudentRecordPath(info.studentFileName);
-                    if(!currentStudentRecordPath.is_open()){
-                        TraceLog(LOG_WARNING, "NO EXISTING FILE FOUND WITH PROVIDED PATH: %s", info.studentFileName);
-                        TraceLog(LOG_INFO, "ATTEMPTING TO CREATE FILE WITH PROVIDED PATH: %s", info.studentFileName);
-                        ofstream currentStudentRecordPathOut(info.studentFileName);
-                        if(!currentStudentRecordPathOut.is_open()) TraceLog(LOG_ERROR, "UNEXPECTED ERROR ENCOUNTERED, ATTEMPT TO DIAGNOSE PRETTY PLEASE :3");
-                        else if(currentStudentRecordPathOut.is_open()){
-                            currentStudentRecordPathOut << data.dump(8);
-                            TraceLog(LOG_INFO, "SUCCESSFULLY SET STUDENT INFORMATION IN FILE: %s", info.studentFileName);
-                            currentStudentRecordPath.close();
-                        }
-                    } else if (currentStudentRecordPath.is_open()){
-                        currentStudentRecordPath >> data;
-                        if(data["id"] == IDBuffer){
-                            currentStudentRecordPath.close();
-                            currentScreen = MAIN_MENU;
-                            continue;
-                        }
-                    }
-                    currentStudentRecordPath.close();
                     currentScreen = SEMESTER_SCREEN;
                 }
             }
@@ -468,6 +455,9 @@ int main(){
             DrawText(errorMessageForLastName, 10, errorMessageForLastNamePosY, 20, RED);
             DrawText(errorMessageForID, 10, errorMessageForIDPosY, 20, RED);
         }
+
+
+
         if (currentScreen == SEMESTER_SCREEN)
         {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -478,7 +468,6 @@ int main(){
 
             DrawTextEx(font.torus50, text.semesterDetailsText, text.semesterDetailsTextPos, text.titleScale, text.spacing, white);
             DrawTextEx(font.torus30, text.semesterText, text.semesterTextPos, text.subtitleScale, text.spacing, white);
-            //DrawTextEx(font.torus30, student.getName(), {(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, text.subtitleScale, text.spacing, white);
             DrawRectangleRec(yearInputBox, baseColor);
             if(confirm.Draw({(float)GetScreenWidth() / 2, (float)text.yearTextPos.y + 130}, 0.3f, 0)) hoverAnyButton = true;
             if (hoverAnyButton){
@@ -494,11 +483,14 @@ int main(){
             {
                 student.setSemesterAndYear(semesterSelection + 1, yearSelection);
                 setStudentInfo();
-                writeIntoJson();
+                primeJsonFile();
+                viewDataLoaded = false; 
                 currentScreen = MAIN_MENU;
             }
         }
  
+
+
         if (currentScreen == MAIN_MENU)
         {
             DrawTextEx(font.torus50, text.mainMenuText, {text.mainMenuTextPos.x, text.mainMenuTextPos.y}, text.titleScale, text.spacing, white);
@@ -534,6 +526,7 @@ int main(){
                     setRegistration(2);
                     setRegistration(3);
                     writeIntoJson();
+                    viewDataLoaded = false; 
                     for(auto& units : registrations.toggleStateForUnits){
                         units = false;
                     }
@@ -541,14 +534,54 @@ int main(){
                         groupings = false;
                     }
                 }
-                
             }
+
             if(toggleState[2]){
+                std::string fullPath = buildPath(info.studentFileName);
+                {
+                    std::ifstream f(fullPath);
+                    if(f.is_open()) f >> viewData;
+                }
+
+                float startY = 210.0f;
+                float col1   = 100.0f;
+                float col2   = 650.0f;
+
+                string trimStr = "Trimester: " + to_string(viewData.value("semester", 0)) + "F-" + to_string(viewData.value("year", 0));
+                string nameStr = "Student Name: " + viewData.value("name", "—");
+                string idStr   = "Student ID: "   + viewData.value("id",   "—");
+
                 DrawTextEx(font.torus30, text.viewOrPrintText, text.viewOrPrintTextPos, text.subtitleScale, text.spacing, backgroundColor);
                 Vector2 getNameScale = MeasureTextEx(font.torus30, info.displayName, text.subtitleScale, text.spacing);
                 Vector2 nameTextPos = {(GetScreenWidth()/2.0f - getNameScale.x/2.0f), (text.viewOrPrintTextPos.y + 30)};
                 DrawTextEx(font.torus30, info.displayName, nameTextPos, text.subtitleScale, text.spacing, baseColor);
+                DrawTextEx(font.torus30, trimStr.c_str(), {col1, startY}, 30, 3, white); startY += 38;
+                DrawTextEx(font.torus30, nameStr.c_str(), {col1, startY}, 30, 3, white); startY += 38;
+                DrawTextEx(font.torus30, idStr.c_str(),   {col1, startY}, 30, 3, white); startY += 50;
+
+                DrawTextEx(font.torus30, "Unit",     {col1, startY}, 30, 3, blueColor);
+                DrawTextEx(font.torus30, "Grouping", {col2, startY}, 30, 3, blueColor);
+                startY += 36;
+
+                const char* groups[]      = {"Registrations for 1E1", "Registrations for 1E2", "Registrations for 1E3", "Registrations for 1E4"};
+                const char* groupLabels[] = {"1E1", "1E2", "1E3", "1E4"};
+
+                bool anyRegistrations = false;
+                for(int g = 0; g < 4; g++){
+                    if(!viewData.contains(groups[g]) || viewData[groups[g]].empty()) continue;
+                    for(auto& unit : viewData[groups[g]]){
+                        anyRegistrations = true;
+                        DrawTextEx(font.torus30, unit.get<string>().c_str(), {col1, startY}, 30, 3, white);
+                        DrawTextEx(font.torus30, groupLabels[g],             {col2, startY}, 30, 3, white);
+                        startY += 34;
+                    }
+                }
+
+                if(!anyRegistrations){
+                    DrawTextEx(font.torus30, "No registrations yet.", {col1, startY}, 28, 3, baseTextColor);
+                }
             }
+
             DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
             if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
             if (registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 1)) hoverAnyButton = true;
@@ -560,12 +593,42 @@ int main(){
             }
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !hoverAnyButton && GetMousePosition().y <= 99.0f) {
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
+                viewDataLoaded = false; 
             }
         }
-        if (currentScreen == DEVELOPER_INFO){
-            //DrawTextEx(font.torus50, text.creditsTitleText, {text.CreditsTitleTextPos.x, text.CreditsTitleTextPos.y}, text.titleScale, text.spacing, white);      
 
-            DrawTextEx(font.fira12, fileData, text.artPos, text.artScale, text.spacing, white);
+
+        if (currentScreen == DEVELOPER_INFO){
+                DrawTextEx(font.fira12, fileData, text.artPos, text.artScale, text.spacing, white);
+
+                float startY = 350.0f;
+                float col1   = 50.0f;
+                float col2   = 450.0f;
+                float col3   = 700.0f;
+
+                DrawTextEx(font.torus20, "Group 1E1-A",  {col1, startY}, 20, 3, greenColor); startY += 42;
+
+                DrawTextEx(font.torus20, "Ung Phearakleap",  {col1, startY}, 20, 3, white);
+                DrawTextEx(font.torus20, "P20250001",         {col2, startY}, 20, 3, baseTextColor);
+                DrawTextEx(font.torus20, "Core system, Login, registration, JSON",  {col3, startY}, 20, 3, baseTextColor);
+                startY += 36;
+
+                DrawTextEx(font.torus20, "Buntong Anupheap", {col1, startY}, 20, 3, white);
+                DrawTextEx(font.torus20, "P20250055",         {col2, startY}, 20, 3, baseTextColor);
+                DrawTextEx(font.torus20, "View/Print page, Developer Info screen",  {col3, startY}, 20, 3, baseTextColor);
+                startY += 36;
+
+                DrawTextEx(font.torus20, "Pheng Sopheak",    {col1, startY}, 20, 3, white);
+                DrawTextEx(font.torus20, "P20250002",         {col2, startY}, 20, 3, baseTextColor);
+                DrawTextEx(font.torus20, "Flowchart",                                {col3, startY}, 20, 3, baseTextColor);
+                startY += 56;
+
+                DrawTextEx(font.torus30, "Press any key or click to exit...", {col1, startY}, 28, 3, baseTextColor);
+
+                if(IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    CloseWindow();
+    }
+
         }
         EndDrawing();
     }
