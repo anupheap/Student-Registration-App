@@ -12,6 +12,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
+#include <iomanip>
+#include <algorithm>
 
 using namespace nlohmann;
 using namespace std;
@@ -53,6 +56,10 @@ int main(){
         char submitButtonButtonPath[] = "assets\\textures\\submitButton.png";
         char submitButtonWhenHoverPath[] = "assets\\textures\\submitButtonHover.png";
         char submitButtonWhenClickedPath[] = "assets\\textures\\submitButtonClicked.png";
+        char printButtonPath[] = "assets\\textures\\submitButton.png";
+        char printButtonHoverPath[] = "assets\\textures\\submitButtonHover.png";
+        char printButtonClickedPath[] = "assets\\textures\\submitButtonClicked.png";
+
 
     // App Icon
         char logoPath[] = "assets\\textures\\student_registration_logo.png";
@@ -100,6 +107,11 @@ int main(){
             submitButtonButtonPath,
             submitButtonWhenHoverPath,
             submitButtonWhenClickedPath
+        );
+        Button printButton(
+            printButtonPath,
+            printButtonHoverPath,
+            printButtonClickedPath
         );
     
     SetWindowIcon(logo);
@@ -194,7 +206,8 @@ int main(){
 
     ordered_json viewData;
     bool viewDataLoaded = false;
-
+    static std::string printStatusMsg = "";
+    static double printStatusTimer = 0.0;
 
 
     while (!WindowShouldClose())
@@ -511,7 +524,6 @@ int main(){
                 bool isMathFull = (getAvailableSlots("Mathematics II", data["year"]) <= 0);
                 bool isWritingFull = (getAvailableSlots("Writing and Researching skills", data["year"]) <= 0);
 
-
                 bool progLocked = isUnitRegistered("Programming", data) || isProgFull;
                 bool physLocked = isUnitRegistered("Physics I", data) || isPhyFull;
                 bool mathLocked = isUnitRegistered("Mathematics II", data) || isMathFull;
@@ -591,12 +603,55 @@ int main(){
                 if(!anyRegistrations){
                     DrawTextEx(font.torus30, "No registrations yet.", {col1, startY}, 28, 3, baseTextColor);
                 }
-            }
+
+                if(!printStatusMsg.empty()){
+                    DrawTextEx(font.torus30, printStatusMsg.c_str(),
+                               {col1, (float)GetScreenHeight() - 60.0f}, 24, 3, greenColor);
+                    if(GetTime() - printStatusTimer > 3.0)
+                        printStatusMsg = "";
+                }
+            } // closes if(toggleState[2])
 
             DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
             if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
-            if (registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 1)) hoverAnyButton = true;
-            if (viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 2)) hoverAnyButton = true;
+            if(registerButton.Draw({((float)GetScreenWidth() / 2) + 300, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 1)) hoverAnyButton = true;
+            if(viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 2)) hoverAnyButton = true;
+
+            if(toggleState[2]){
+                if(printButton.Draw({((float)GetScreenWidth() / 2) + 100, (float)GetScreenHeight() - 60.0f}, 0.35f, 0, 3)){
+                    hoverAnyButton = true;
+                    std::string studentName = viewData.value("name", "Unknown");
+                    std::replace(studentName.begin(), studentName.end(), ' ', '_');
+                    std::string outPath = "records/studentRecordOutput/record" + studentName + ".txt";
+                    std::filesystem::create_directories("records/studentRecordOutput");
+                    std::ofstream outFile(outPath);
+                    if(outFile.is_open()){
+                        outFile << "Trimester: " << viewData.value("semester", 0) << "F-" << viewData.value("year", 0) << "\n";
+                        outFile << "Student Name: " << viewData.value("name", "—") << "\n";
+                        outFile << "Student ID: "   << viewData.value("id",   "—") << "\n\n";
+                        outFile << std::left << std::setw(40) << "Unit" << "Grouping\n";
+                        outFile << std::string(50, '-') << "\n";
+                        const char* groups[]      = {"Registrations for 1E1","Registrations for 1E2","Registrations for 1E3","Registrations for 1E4"};
+                        const char* groupLabels[] = {"1E1","1E2","1E3","1E4"};
+                        bool anyReg = false;
+                        for(int g = 0; g < 4; g++){
+                            if(!viewData.contains(groups[g]) || viewData[groups[g]].empty()) continue;
+                            for(auto& unit : viewData[groups[g]]){
+                                outFile << std::left << std::setw(40) << unit.get<std::string>() << groupLabels[g] << "\n";
+                                anyReg = true;
+                            }
+                        }
+                        if(!anyReg) outFile << "No registrations yet.\n";
+                        outFile.close();
+                        printStatusMsg   = "Saved: " + outPath;
+                        printStatusTimer = GetTime();
+                    } else {
+                        printStatusMsg   = "Error: could not write file.";
+                        printStatusTimer = GetTime();
+                    }
+                }
+            } // closes if(toggleState[2]) for print button
+
             if(hoverAnyButton){
                 SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
             } else {
@@ -606,7 +661,7 @@ int main(){
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
                 viewDataLoaded = false; 
             }
-        }
+        } // closes if(currentScreen == MAIN_MENU)
 
 
         if (currentScreen == DEVELOPER_INFO){
