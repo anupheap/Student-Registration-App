@@ -617,7 +617,7 @@ int main(){
             if(viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 2)) hoverAnyButton = true;
 
             if(toggleState[2]){
-                if(printButton.Draw({((float)GetScreenWidth() / 2) + 100, (float)GetScreenHeight() - 60.0f}, 0.35f, 0, 3)) hoverAnyButton = true;
+                if(printButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 60.0f}, 0.35f, 0, 3)) hoverAnyButton = true;
                 if(printButton.isPressed()){
                     std::string studentName = viewData.value("name", "Unknown");
                     std::replace(studentName.begin(), studentName.end(), ' ', '_');
