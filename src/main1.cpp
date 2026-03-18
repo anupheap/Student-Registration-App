@@ -56,10 +56,9 @@ int main(){
         char submitButtonButtonPath[] = "assets\\textures\\submitButton.png";
         char submitButtonWhenHoverPath[] = "assets\\textures\\submitButtonHover.png";
         char submitButtonWhenClickedPath[] = "assets\\textures\\submitButtonClicked.png";
-        char printButtonPath[] = "assets\\textures\\submitButton.png";
-        char printButtonHoverPath[] = "assets\\textures\\submitButtonHover.png";
-        char printButtonClickedPath[] = "assets\\textures\\submitButtonClicked.png";
-
+        char printButtonPath[] = "assets\\textures\\printButtonBase.png";
+        char printButtonHoverPath[] = "assets\\textures\\printButtonHover.png";
+        char printButtonClickedPath[] = "assets\\textures\\printButtonClicked.png";
 
     // App Icon
         char logoPath[] = "assets\\textures\\student_registration_logo.png";
@@ -97,7 +96,6 @@ int main(){
             viewOrPrintButtonHoverPath,
             viewOrPrintButtonClickedPath
         );
-
         Button exitButton(
             exitButtonPath,
             exitButtonWhenHoverPath,
@@ -121,7 +119,6 @@ int main(){
         GetScreenHeight() / 3.37f - (text.getFirstNameTextScale.y / 2),
         370,
         30};
-
     Rectangle middleNameInputBox = {
         GetScreenWidth() / 2.8f,
         GetScreenHeight() / 2.47f - (text.getMiddleNameTextScale.y / 2),
@@ -206,8 +203,8 @@ int main(){
 
     ordered_json viewData;
     bool viewDataLoaded = false;
-    static std::string printStatusMsg = "";
-    static double printStatusTimer = 0.0;
+    std::string printStatusMsg = "";
+    double printStatusTimer = 0.0;
 
 
     while (!WindowShouldClose())
@@ -401,7 +398,7 @@ int main(){
                         IDValidity = true;
                         strcpy(errorMessageForID, "\0");
                 }
-                
+
                 // If all validations pass
                 if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) 
                 {
@@ -436,7 +433,6 @@ int main(){
                                 currentScreen = MAIN_MENU;
                             } 
                             else {
-                                // Name exists but ID is different
                                 strcpy(errorMessageForID, "[ERROR] Name exists but ID mismatch!");
                                 TraceLog(LOG_WARNING, "Name collision: %s with different ID", info.studentFileName);
                             }
@@ -448,7 +444,6 @@ int main(){
                         }
                     } 
                     else {
-                        
                         if (isIDDuplicate(IDBuffer)) {
                             strcpy(errorMessageForID, "[ERROR] ID already registered to another name!");
                             TraceLog(LOG_WARNING, "ID collision: %s already exists", IDBuffer);
@@ -494,7 +489,6 @@ int main(){
                 currentScreen = MAIN_MENU;
             }
         }
- 
 
 
         if (currentScreen == MAIN_MENU)
@@ -618,8 +612,8 @@ int main(){
             if(viewOrPrintButton.Draw({((float)GetScreenWidth() / 2) + 480, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 2)) hoverAnyButton = true;
 
             if(toggleState[2]){
-                if(printButton.Draw({((float)GetScreenWidth() / 2) + 100, (float)GetScreenHeight() - 60.0f}, 0.35f, 0, 3)){
-                    hoverAnyButton = true;
+                if(printButton.Draw({((float)GetScreenWidth() / 2) + 100, (float)GetScreenHeight() - 60.0f}, 0.35f, 0, 3)) hoverAnyButton = true;
+                if(printButton.isPressed()){
                     std::string studentName = viewData.value("name", "Unknown");
                     std::replace(studentName.begin(), studentName.end(), ' ', '_');
                     std::string outPath = "records/studentRecordOutput/record" + studentName + ".txt";
@@ -694,7 +688,6 @@ int main(){
             if(IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
                 CloseWindow();
             }
-
         }
         EndDrawing();
     }
