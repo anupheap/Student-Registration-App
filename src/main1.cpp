@@ -398,8 +398,7 @@ int main(){
                         IDValidity = true;
                         strcpy(errorMessageForID, "\0");
                 }
-
-                // If all validations pass
+               
                 if (firstNameValidity && IDValidity && middleNameValidity && lastNameValidity) 
                 {
                     // Set student name and filename
@@ -609,7 +608,7 @@ int main(){
                     if(GetTime() - printStatusTimer > 3.0)
                         printStatusMsg = "";
                 }
-            } // closes if(toggleState[2])
+            }
 
             DrawRectangle(0, 0, GetScreenWidth(), 99, baseColor);
             if(exitButton.Draw({((float)GetScreenWidth() / 2) - 500, (float)GetScreenHeight() - 664.0f}, 0.35f, 0, 0)) hoverAnyButton = true;
@@ -649,7 +648,7 @@ int main(){
                         printStatusTimer = GetTime();
                     }
                 }
-            } // closes if(toggleState[2]) for print button
+            }
 
             if(hoverAnyButton){
                 SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
@@ -660,7 +659,7 @@ int main(){
                 for (int i = 0; i < 3; i++) toggleState[i] = false;
                 viewDataLoaded = false; 
             }
-        } // closes if(currentScreen == MAIN_MENU)
+        }
 
 
         if (currentScreen == DEVELOPER_INFO){
